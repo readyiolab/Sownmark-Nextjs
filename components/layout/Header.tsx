@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, ChevronRight, ChevronDown } from 'lucide-react';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
@@ -103,13 +104,12 @@ const Header: React.FC<HeaderProps> = ({ isScrolled }) => {
         <nav className="container mx-auto px-4 md:px-6 max-w-7xl">
           <div className="flex items-center justify-between">
             <Link href="/" className="relative z-[70] py-6" onClick={closeMenu}>
-              <img
+              <Image
                 src="/logo.webp"
                 alt="Sownmark"
-                width={180}
-                height={36}
-                fetchPriority="high"
-                loading="eager"
+                width={139}
+                height={28}
+                preload
                 className={`h-7 w-auto transition-all duration-300 ${logoInvert}`}
               />
             </Link>

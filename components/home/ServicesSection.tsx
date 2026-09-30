@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { LineChart, Search, Tv, Share2, Star, Globe, Code, Users } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useInView } from '@/hooks/useInView';
 
 const services = [
   {
@@ -64,17 +64,16 @@ const services = [
   },
 ];
 
+const revealBase = 'transition-[opacity,transform] duration-[600ms] ease-out motion-reduce:transition-none';
+
 const ServicesSection: React.FC = React.memo(() => {
+  const { ref, inView } = useInView<HTMLElement>();
+  const reveal = inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6';
+
   return (
-    <section className="py-24 bg-[#0a0f24]">
+    <section ref={ref} className="py-24 bg-[#0a0f24]">
       <div className="container mx-auto px-4 max-w-7xl">
-        <motion.div
-          className="text-center mb-16 space-y-4"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div className={`text-center mb-16 space-y-4 ${revealBase} ${reveal}`}>
           <div className="inline-block px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-xs font-bold text-blue-400 uppercase tracking-widest">
             Expert Capabilities
           </div>
@@ -82,17 +81,14 @@ const ServicesSection: React.FC = React.memo(() => {
             Comprehensive Tech & Growth Solutions
           </h2>
           <div className="w-16 h-1 bg-blue-500 mx-auto rounded-full"></div>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {services.map((service, index) => (
-            <motion.div
+            <div
               key={index}
-              className="relative flex flex-col p-8 bg-gradient-to-br from-[#121834]/80 to-[#0a0e28]/95 border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: service.delay }}
+              className={`relative flex flex-col p-8 bg-gradient-to-br from-[#121834]/80 to-[#0a0e28]/95 border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden ${revealBase} ${reveal}`}
+              style={{ transitionDelay: inView ? `${service.delay}s` : undefined }}
             >
               {/* Subtle top light highlight inside card */}
               <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -103,7 +99,7 @@ const ServicesSection: React.FC = React.memo(() => {
                 {service.title}
               </h3>
 
-              <p className="text-xs sm:text-sm text-white/50 leading-relaxed flex-grow font-medium">
+              <p className="text-xs sm:text-sm text-white/70 leading-relaxed flex-grow font-medium">
                 {service.description}
               </p>
 
@@ -127,7 +123,7 @@ const ServicesSection: React.FC = React.memo(() => {
                   />
                 </svg>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Mail } from 'lucide-react';
 import { FaInstagram, FaLinkedin } from 'react-icons/fa';
 
@@ -12,7 +13,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Column 1 - Logo & About */}
           <div>
-            <img src="/logo.webp" alt="Sownmark Logo" width={180} height={36} loading="lazy" className="h-9 w-auto mb-6" />
+            <Image src="/logo.webp" alt="Sownmark Logo" width={179} height={36} className="h-9 w-auto mb-6" />
             <p className="text-gray-600 text-sm leading-relaxed">
               Sownmark is India's leading full-service digital marketing and custom software development agency. We specialise in generative engine optimisation (GEO), answer engine optimisation (AEO), search engine optimisation (SEO), smart display advertising, programmatic ads, and tech recruitment, helping brands grow and scale across major cities like Delhi, Mumbai, and Bangalore.
             </p>

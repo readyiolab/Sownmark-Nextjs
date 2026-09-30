@@ -3,13 +3,22 @@
 > India's leading full-service digital marketing and custom software agency.
 
 ## Services Offered
-- **Digital Marketing**: Full-funnel digital marketing services, performance advertising, and growth strategy.
-- **Search Engine & Generative Engine Optimisation (GEO/AEO/SEO)**: Getting brands cited by traditional engines and generative AI tools (ChatGPT, Perplexity, Gemini).
-- **Display Advertising**: Programmatic advertising, GDN placement, high-converting banner and video ad creation.
-- **Social Media Management**: Organic social growth, content strategy, brand community engagement.
-- **Web & Software Development**: React, Next.js, Node.js, SaaS development, CRM & ERP custom architecture.
-- **Hiring & Talent Solutions**: Tech and marketing talent recruitment and staffing.
+- [Digital Marketing](https://sownmark.com/services/digital-marketing): Full-funnel digital marketing services, performance advertising, and growth strategy.
+- [SEO + GEO + AEO](https://sownmark.com/services/seo): Getting brands cited by traditional engines and generative AI tools (ChatGPT, Perplexity, Gemini).
+- [Generative Engine Optimisation](https://sownmark.com/services/generative-engine-optimisation): Optimising entities and content so AI assistants cite your brand.
+- [Answer Engine Optimisation](https://sownmark.com/services/answer-engine-optimisation): Featured snippets, voice search and Google AI Overviews.
+- [Display Advertising](https://sownmark.com/services/display-advertising): Programmatic advertising, GDN placement, high-converting banner and video ad creation.
+- [Social Media Management](https://sownmark.com/services/social-media-management): Organic social growth, content strategy, brand community engagement.
+- [Influencer Marketing](https://sownmark.com/services/influencer-marketing): Vetted creator network for brand trust and conversions.
+- [Web Development](https://sownmark.com/services/web-development): Landing pages, corporate sites and e-commerce portals.
+- [Software Development](https://sownmark.com/services/software-development): React, Next.js, Node.js, SaaS development, CRM & ERP custom architecture.
+- [Hiring Solutions](https://sownmark.com/services/hiring-solutions): Tech and marketing talent recruitment and staffing.
+
+## Resources
+- [Case Studies](https://sownmark.com/case-studies): Client outcomes across marketing and engineering projects.
+- [Blog](https://sownmark.com/blog): Articles on SEO, GEO, AEO and growth marketing.
+- [About](https://sownmark.com/about): Company background and team.
 
 ## Contact & Location
-- Website: https://sownmark.com
-- Inquiries: https://sownmark.com/contact
+- [Website](https://sownmark.com)
+- [Contact form](https://sownmark.com/contact): Business inquiries and free strategy consultations.

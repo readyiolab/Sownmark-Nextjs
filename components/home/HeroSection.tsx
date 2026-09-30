@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { ChevronRight, Sparkles, TrendingUp, Cpu, Award } from 'lucide-react';
+import Image from 'next/image';
+import { ChevronRight, TrendingUp, Cpu, Award } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
@@ -75,18 +76,14 @@ const HeroSection: React.FC = () => {
           <div className="lg:col-span-5 relative group hidden lg:block animate-fade-scale-in">
             <div className="relative z-10 overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#121834]/40 p-2 backdrop-blur-sm shadow-2xl">
               <div className="relative rounded-[2.2rem] overflow-hidden bg-slate-950 min-h-[300px] flex flex-col justify-end">
-                <img
+                {/* Must stay lazy: this column is display:none below lg, so eager/preload would download it on mobile */}
+                <Image
                   src="/hero.webp"
                   alt="AI Marketing Growth"
-                  width={600}
-                  height={500}
+                  fill
+                  sizes="(min-width: 1024px) 40vw, 1px"
                   fetchPriority="high"
-                  loading="eager"
-                  className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                  onError={(e) => {
-                    // Keep layout background if image is not copied yet
-                    e.currentTarget.style.opacity = '0';
-                  }}
+                  className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
                 />
 
                 {/* Gradient overlay for readability */}
@@ -100,24 +97,24 @@ const HeroSection: React.FC = () => {
                       <span className="w-2 h-2 rounded-full bg-yellow-500" />
                       <span className="w-2 h-2 rounded-full bg-green-500" />
                     </div>
-                    <span className="text-[9px] font-bold tracking-widest text-white/50 uppercase">AI Visibility Dashboard</span>
+                    <span className="text-[9px] font-bold tracking-widest text-white/70 uppercase">AI Visibility Dashboard</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-1">
-                      <span className="text-[9px] uppercase tracking-wide text-white/50 font-bold">Generative Share</span>
+                      <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">Generative Share</span>
                       <div className="text-xl font-black text-white">+245%</div>
                       <div className="text-[8px] text-green-400 font-bold">▲ Citations growing</div>
                     </div>
                     <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-1">
-                      <span className="text-[9px] uppercase tracking-wide text-white/50 font-bold">AEO Rank Health</span>
+                      <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">AEO Rank Health</span>
                       <div className="text-xl font-black text-cyan-400">98.4%</div>
                       <div className="text-[8px] text-cyan-400 font-bold">Optimized for Google</div>
                     </div>
                   </div>
 
                   <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-2">
-                    <span className="text-[9px] uppercase tracking-wide text-white/50 font-bold">Citations Sources Referenced</span>
+                    <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">Citations Sources Referenced</span>
                     <div className="space-y-1">
                       <div className="flex justify-between text-[10px] text-white/80 font-bold">
                         <span>ChatGPT Search</span>
@@ -147,62 +144,24 @@ const HeroSection: React.FC = () => {
 
         {/* 1.2 GEO/AEO Trust Bar */}
         <div className="mt-24 border-t border-white/5 pt-12 text-center space-y-6">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-white/40">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-white/60">
             As referenced by AI engines
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12 opacity-100">
             {[
-              {
-                name: 'ChatGPT',
-                color: 'hover:text-[#19C37D]',
-                icon: (
-                  <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/chatgpt.png" alt="ChatGPT" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
-                  </div>
-                )
-              },
-              {
-                name: 'Perplexity',
-                color: 'hover:text-[#22C55E]',
-                icon: (
-                  <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/perplexity.png" alt="Perplexity" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
-                  </div>
-                )
-              },
-              {
-                name: 'Gemini',
-                color: 'hover:text-[#4B90E2]',
-                icon: (
-                  <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/gemini.webp" alt="Gemini" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
-                  </div>
-                )
-              },
-              {
-                name: 'Claude',
-                color: 'hover:text-[#D97706]',
-                icon: (
-                  <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/claude.png" alt="Claude" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
-                  </div>
-                )
-              },
-              {
-                name: 'Copilot',
-                color: 'hover:text-[#3B82F6]',
-                icon: (
-                  <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/copilot.png" alt="Copilot" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
-                  </div>
-                )
-              }
+              { name: 'ChatGPT', color: 'hover:text-[#19C37D]', src: '/icons/chatgpt.png' },
+              { name: 'Perplexity', color: 'hover:text-[#22C55E]', src: '/icons/perplexity.png' },
+              { name: 'Gemini', color: 'hover:text-[#4B90E2]', src: '/icons/gemini.webp' },
+              { name: 'Claude', color: 'hover:text-[#D97706]', src: '/icons/claude.png' },
+              { name: 'Copilot', color: 'hover:text-[#3B82F6]', src: '/icons/copilot.png' },
             ].map((engine) => (
               <div
                 key={engine.name}
                 className={`flex items-center gap-2 text-white/90 transition-all duration-300 ${engine.color} hover:scale-105 cursor-pointer`}
               >
-                {engine.icon}
+                <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
+                  <Image src={engine.src} alt="" width={24} height={24} className="w-6 h-6 object-contain" />
+                </div>
                 <span className="text-sm font-black tracking-tight">{engine.name}</span>
               </div>
             ))}

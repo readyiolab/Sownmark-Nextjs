@@ -470,13 +470,12 @@ h6 {
   animation: heroFadeScaleIn 0.8s ease-out both;
 }
 
+/* Transform-only so the hero heading is visible (and counted for LCP) from first paint */
 @keyframes heroFadeSlideIn {
   from {
-    opacity: 0;
     transform: translateX(-30px);
   }
   to {
-    opacity: 1;
     transform: translateX(0);
   }
 }
@@ -494,12 +493,35 @@ h6 {
 
 @keyframes heroFadeScaleIn {
   from {
-    opacity: 0;
     transform: scale(0.95);
   }
   to {
-    opacity: 1;
     transform: scale(1);
+  }
+}
+
+.cookie-banner {
+  animation: cookieSlideUp 0.5s ease-out both;
+}
+
+html[data-cookie-consent] .cookie-banner {
+  display: none;
+}
+
+@keyframes cookieSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner,
+  .animate-fade-slide-in,
+  .animate-fade-scale-in {
+    animation: none;
   }
 }
 

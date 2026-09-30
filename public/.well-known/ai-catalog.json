@@ -1,0 +1,82 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Sownmark Solutions",
+    "documentationUrl": "https://sownmark.com/llms.txt",
+    "logoUrl": "https://sownmark.com/logo.webp"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:sownmark.com:site:llms-txt",
+      "displayName": "Sownmark LLM Overview",
+      "type": "text/markdown",
+      "url": "https://sownmark.com/llms.txt",
+      "description": "Machine-readable summary of Sownmark's services, contact details and key pages for AI agents.",
+      "tags": ["overview", "llms.txt"],
+      "representativeQueries": [
+        "What does Sownmark do?",
+        "Which services does Sownmark offer?"
+      ]
+    },
+    {
+      "identifier": "urn:air:sownmark.com:services:digital-marketing",
+      "displayName": "Digital Marketing Services",
+      "type": "text/html",
+      "url": "https://sownmark.com/services/digital-marketing",
+      "description": "Full-funnel digital marketing services including GEO, AEO, SEO, display ads, and social media management.",
+      "tags": ["digital marketing", "performance marketing"],
+      "representativeQueries": [
+        "Best digital marketing agency in India",
+        "Performance marketing agency for B2B lead generation"
+      ]
+    },
+    {
+      "identifier": "urn:air:sownmark.com:services:seo-geo-aeo",
+      "displayName": "SEO & Generative Engine Optimisation",
+      "type": "text/html",
+      "url": "https://sownmark.com/services/seo",
+      "description": "Optimisation for search engines and generative AI answer engines like ChatGPT, Perplexity, and Gemini.",
+      "tags": ["SEO", "GEO", "AEO"],
+      "representativeQueries": [
+        "How to get my brand cited by ChatGPT",
+        "Generative engine optimisation agency in India"
+      ]
+    },
+    {
+      "identifier": "urn:air:sownmark.com:services:software-development",
+      "displayName": "Software Development Services",
+      "type": "text/html",
+      "url": "https://sownmark.com/services/software-development",
+      "description": "Custom full-stack web and software development, SaaS engineering, and enterprise architecture.",
+      "tags": ["software development", "SaaS", "web development"],
+      "representativeQueries": [
+        "Custom software development company in India",
+        "Hire a team to build a SaaS product"
+      ]
+    },
+    {
+      "identifier": "urn:air:sownmark.com:site:case-studies",
+      "displayName": "Case Studies",
+      "type": "text/html",
+      "url": "https://sownmark.com/case-studies",
+      "description": "Performance marketing and software engineering case studies and client outcomes.",
+      "tags": ["case studies", "results"],
+      "representativeQueries": [
+        "Sownmark client results",
+        "Digital marketing case studies India"
+      ]
+    },
+    {
+      "identifier": "urn:air:sownmark.com:site:contact",
+      "displayName": "Contact Sownmark",
+      "type": "text/html",
+      "url": "https://sownmark.com/contact",
+      "description": "Contact form for business inquiries, strategy consultation, and client partnerships.",
+      "tags": ["contact", "consultation"],
+      "representativeQueries": [
+        "How do I contact Sownmark?",
+        "Book a free strategy call with Sownmark"
+      ]
+    }
+  ]
+}

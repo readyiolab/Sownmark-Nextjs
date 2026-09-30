@@ -1,16 +1,10 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, User, Tag, Send } from "lucide-react";
-import { motion } from "framer-motion";
-import {
-  getAllBlogs,
-  getBlogBySlug,
-  getCommentsByBlogId,
-  createComment,
-} from "@/services/api";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import { ArrowLeft, Calendar, Clock, User, Tag } from "lucide-react";
+import BlogComments from "./BlogComments";
 
 // Types
 interface BlogPost {
@@ -33,13 +27,88 @@ interface BlogPost {
   shares?: number;
 }
 
-interface Comment {
-  id: number;
-  blog_id: number;
-  user_name: string;
-  user_email?: string;
-  content: string;
-  created_at: string;
+type Props = {
+  params: Promise<{ slug: string }>;
+};
+
+const API_BASE_URL = `${
+  process.env.NEXT_PUBLIC_API_URL || "https://sownmark.com"
+}/api`;
+
+const REVALIDATE_SECONDS = 300;
+
+const toStringArray = (value: unknown): string[] => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const getPost = async (slug: string): Promise<BlogPost | null> => {
+  const res = await fetch(
+    `${API_BASE_URL}/blogs/slug/${encodeURIComponent(slug)}`,
+    { next: { revalidate: REVALIDATE_SECONDS } }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  if (!data) return null;
+  return {
+    ...data,
+    category: toStringArray(data.category),
+    tags: toStringArray(data.tags),
+  };
+};
+
+const getAllPosts = async (): Promise<BlogPost[]> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/blogs`, {
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+};
+
+export async function generateStaticParams() {
+  return [];
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+  if (!post) {
+    return { title: "Blog Post Not Found" };
+  }
+
+  return {
+    title: { absolute: post.title },
+    description: post.meta_description,
+    robots: { index: true, follow: true, "max-image-preview": "large" },
+    alternates: {
+      canonical: `https://sownmark.com/blog/${post.slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.meta_description,
+      images: [{ url: post.image }],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.meta_description,
+      images: [post.image],
+    },
+  };
 }
 
 const editorJSToHtml = (rawContent: string | { blocks: any[] }): string => {
@@ -82,7 +151,7 @@ const editorJSToHtml = (rawContent: string | { blocks: any[] }): string => {
         case "image":
           return `<img src="${block.data.file?.url || ""}" alt="${
             block.data.caption || "Image"
-          }" class="w-full max-w-md h-auto rounded-lg my-4 mx-auto object-cover" />`;
+          }" loading="lazy" class="w-full max-w-md h-auto rounded-lg my-4 mx-auto object-cover" />`;
         default:
           return "";
       }
@@ -107,237 +176,65 @@ const getCategoryColor = (category: string): { bg: string; text: string } => {
   }
 };
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
+export default async function BlogPostPage({ params }: Props) {
+  const { slug } = await params;
+  const [post, blogs] = await Promise.all([getPost(slug), getAllPosts()]);
 
-const staggerContainer = {
-  initial: {},
-  animate: { transition: { staggerChildren: 0.2 } },
-};
-
-const BlogPostPage: React.FC = () => {
-  const params = useParams();
-  const slug = params?.slug as string;
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [commentForm, setCommentForm] = useState({
-    name: "",
-    email: "",
-    content: "",
-  });
-  const [formError, setFormError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        if (!slug) return;
-
-        // Parallel fetching
-        const [postRes, blogsRes] = await Promise.all([
-          getBlogBySlug(slug),
-          getAllBlogs(),
-        ]);
-
-        const postData = postRes.data;
-        const blogs = blogsRes.data;
-
-        if (!postData) {
-          setError("Blog post not found");
-          setLoading(false);
-          return;
-        }
-
-        const parsedPost = {
-          ...postData,
-          category: Array.isArray(postData.category)
-            ? postData.category
-            : JSON.parse(postData.category || "[]"),
-          tags: Array.isArray(postData.tags)
-            ? postData.tags
-            : JSON.parse(postData.tags || "[]"),
-        };
-
-        setPost(parsedPost);
-
-        // Fetch comments and related posts
-        try {
-          const { data: commentsData } = await getCommentsByBlogId(postData.id);
-          setComments(Array.isArray(commentsData) ? commentsData : []);
-
-          if (Array.isArray(blogs)) {
-            const related = blogs
-              .filter(
-                (p: any) =>
-                  p.id !== postData.id &&
-                  Array.isArray(p.category) &&
-                  p.category.some((cat: string) =>
-                    parsedPost.category.includes(cat)
-                  )
-              )
-              .slice(0, 3);
-            setRelatedPosts(related);
-          }
-        } catch (err) {
-          console.error("Related/Comments error:", err);
-        }
-
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching blog post:", err);
-        setError("Failed to load blog post");
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [slug]);
-
-  const handleCommentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError(null);
-
-    if (!commentForm.content) {
-      setFormError("Comment content is required");
-      return;
-    }
-
-    if (
-      commentForm.email &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(commentForm.email)
-    ) {
-      setFormError("Invalid email format");
-      return;
-    }
-
-    try {
-      const { data } = await createComment(post!.id, {
-        name: commentForm.name,
-        email: commentForm.email,
-        content: commentForm.content,
-      });
-      setComments([...comments, data.comment]);
-      setCommentForm({ name: "", email: "", content: "" });
-    } catch {
-      setFormError("Failed to submit comment. Please try again.");
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setCommentForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  if (loading) {
-    return (
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="animate-pulse">
-            <div className="h-10 w-48 bg-gray-200 rounded mb-6"></div>
-            <div className="h-96 w-full bg-gray-200 rounded-2xl mb-6"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-4">
-                <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-6 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-6 bg-gray-200 rounded w-2/3"></div>
-              </div>
-              <div className="space-y-4">
-                <div className="h-48 bg-gray-200 rounded-lg"></div>
-                <div className="h-64 bg-gray-200 rounded-lg"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+  if (!post) {
+    notFound();
   }
 
-  if (error || !post) {
-    return (
-      <motion.section
-        className="py-12 bg-gray-100 text-center min-h-screen flex flex-col justify-center"
-        variants={fadeInUp}
-        initial="initial"
-        animate="animate"
-      >
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-          Blog Post Not Found
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {error || "The requested blog post does not exist."}
-        </p>
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-          aria-label="Return to blog homepage"
-        >
-          Back to Blog
-        </Link>
-      </motion.section>
-    );
-  }
+  const relatedPosts = blogs
+    .filter(
+      (p) =>
+        p.id !== post.id &&
+        p.image &&
+        Array.isArray(p.category) &&
+        p.category.some((cat) => post.category.includes(cat))
+    )
+    .slice(0, 3);
 
   const htmlContent = editorJSToHtml(post.content);
+  const primaryCategory = post.category[0] || "Uncategorized";
+  const primaryColor = getCategoryColor(primaryCategory);
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.meta_description,
+    image: post.image,
+    author: {
+      "@type": "Person",
+      name: post.author,
+    },
+    datePublished: post.created_at,
+    publisher: {
+      "@type": "Organization",
+      name: "Sownmark",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://sownmark.com/logo.webp",
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://sownmark.com/blog/${post.slug}`,
+    },
+  };
 
   return (
     <>
-      <title>{post.title}</title>
-      <meta name="description" content={post.meta_description} />
-      <meta name="robots" content="max-image-preview:large" />
-      <link rel="canonical" href={`https://sownmark.com/blog/${post.slug}`} />
-      <meta property="og:title" content={post.title} />
-      <meta property="og:description" content={post.meta_description} />
-      <meta property="og:image" content={post.image} />
-      <meta property="og:type" content="article" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={post.title} />
-      <meta name="twitter:description" content={post.meta_description} />
-      <meta name="twitter:image" content={post.image} />
-
-      {/* Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BlogPosting",
-            headline: post.title,
-            description: post.meta_description,
-            image: post.image,
-            author: {
-              "@type": "Person",
-              name: post.author,
-            },
-            datePublished: post.created_at,
-            publisher: {
-              "@type": "Organization",
-              name: "Sownmark",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://sownmark.com/logo.webp",
-              },
-            },
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `https://sownmark.com/blog/${post.slug}`,
-            },
-          }),
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
         }}
       />
 
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6">
-          <motion.header
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-          >
+          <header>
             <Link
               href="/blog"
               className="mb-6 inline-flex items-center text-gray-900 text-base hover:text-blue-600 transition-colors"
@@ -346,24 +243,26 @@ const BlogPostPage: React.FC = () => {
               <ArrowLeft className="h-5 w-5 mr-2" /> Back to Blog
             </Link>
             <div className="relative">
-              <img
-                src={post.image}
-                alt={`${post.title} - Blog cover`}
-                width="1200"
-                height="600"
-                loading="eager"
-                className="w-full h-auto sm:h-auto object-cover rounded-2xl shadow-lg"
-              />
-              <div className=" rounded-2xl" />
+              {post.image ? (
+                <Image
+                  src={post.image}
+                  alt={`${post.title} - Blog cover`}
+                  width={1280}
+                  height={720}
+                  sizes="(max-width: 1280px) 100vw, 1280px"
+                  loading="eager"
+                  fetchPriority="high"
+                  className="w-full h-auto rounded-2xl shadow-lg"
+                  style={{ width: "100%", height: "auto" }}
+                />
+              ) : (
+                <div className="w-full aspect-video rounded-2xl bg-gray-200 shadow-lg" />
+              )}
               <div className="absolute bottom-6 left-6 right-6">
                 <span
-                  className={`inline-block ${
-                    getCategoryColor(post.category[0] || "Uncategorized").bg
-                  } ${
-                    getCategoryColor(post.category[0] || "Uncategorized").text
-                  } text-sm font-medium py-1 px-3 rounded-full mb-2 shadow-sm`}
+                  className={`inline-block ${primaryColor.bg} ${primaryColor.text} text-sm font-medium py-1 px-3 rounded-full mb-2 shadow-sm`}
                 >
-                  {post.category[0] || "Uncategorized"}
+                  {primaryCategory}
                 </span>
               </div>
             </div>
@@ -374,6 +273,7 @@ const BlogPostPage: React.FC = () => {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
+                  timeZone: "UTC",
                 })}
               </div>
               <div className="flex items-center gap-1">
@@ -385,39 +285,28 @@ const BlogPostPage: React.FC = () => {
                 {post.author}
               </div>
             </div>
-          </motion.header>
+          </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mt-8">
             <div className="lg:col-span-2 overflow-y-auto">
-              <motion.div
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-              >
-                <div className="prose prose-sm sm:prose-base max-w-none text-gray-700">
-                  <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-                </div>
-                <div className="flex flex-wrap gap-2 mt-6">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="flex items-center gap-1 text-sm text-gray-600 bg-gray-100 py-1 px-3 rounded-full shadow-sm"
-                    >
-                      <Tag className="h-4 w-4" />
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
+              <div className="prose prose-sm sm:prose-base max-w-none text-gray-700">
+                <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+              </div>
+              <div className="flex flex-wrap gap-2 mt-6">
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="flex items-center gap-1 text-sm text-gray-600 bg-gray-100 py-1 px-3 rounded-full shadow-sm"
+                  >
+                    <Tag className="h-4 w-4" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <aside className="lg:sticky lg:top-20 space-y-6">
-              <motion.div
-                className="bg-white border border-gray-100 rounded-lg p-4 sm:p-6 shadow-sm"
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-              >
+              <div className="bg-white border border-gray-100 rounded-lg p-4 sm:p-6 shadow-sm">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   About the Author
                 </h2>
@@ -432,140 +321,43 @@ const BlogPostPage: React.FC = () => {
                     <p className="text-xs text-gray-600">{post.author_bio}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                id="comment-section"
-                className="bg-white border border-gray-100 rounded-lg p-4 sm:p-6 shadow-sm lg:sticky lg:top-6"
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-              >
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Leave a Comment
-                </h2>
-                <form className="space-y-4 mb-6" onSubmit={handleCommentSubmit}>
-                  <div>
-                    <input
-                      type="text"
-                      name="name"
-                      value={commentForm.name}
-                      onChange={handleInputChange}
-                      placeholder="Your Name"
-                      className="w-full h-10 px-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                      aria-label="Your Name"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={commentForm.email}
-                      onChange={handleInputChange}
-                      placeholder="Your Email"
-                      className="w-full h-10 px-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                      aria-label="Your Email"
-                    />
-                  </div>
-                  <div>
-                    <textarea
-                      name="content"
-                      value={commentForm.content}
-                      onChange={handleInputChange}
-                      placeholder="Your Comment"
-                      className="w-full h-24 px-3 py-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                      aria-label="Your Comment"
-                    />
-                  </div>
-                  {formError && (
-                    <p className="text-sm text-red-600">{formError}</p>
-                  )}
-                  <button
-                    type="submit"
-                    className="bg-[#1a2957] text-white px-4 py-2 rounded-lg flex items-center gap-2 transition cursor-pointer"
-                  >
-                    Submit <Send className="h-4 w-4" />
-                  </button>
-                </form>
-                <p className="text-xs text-gray-500 mb-6">
-                  Comments are moderated and will appear after approval.
-                </p>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Comments ({comments.length})
-                </h2>
-                {comments.length > 0 ? (
-                  <div className="space-y-4 max-h-60 sm:max-h-80 overflow-y-auto">
-                    {comments.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className="border-t border-gray-200 pt-4"
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            <User className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {comment.user_name || "Anonymous"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(comment.created_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-700">
-                          {comment.content}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-600">
-                    No comments yet. Be the first!
-                  </p>
-                )}
-              </motion.div>
+              <BlogComments blogId={post.id} />
             </aside>
           </div>
 
           {relatedPosts.length > 0 && (
-            <motion.section
-              className="mt-10"
-              variants={staggerContainer}
-              initial="initial"
-              animate="animate"
-            >
+            <section className="mt-10">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-6">
                 Explore More Articles
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {relatedPosts.map((relatedPost) => {
-                  const { bg, text } = getCategoryColor(
-                    relatedPost.category[0] || "Uncategorized"
-                  );
+                  const relatedCategory =
+                    relatedPost.category[0] || "Uncategorized";
+                  const { bg, text } = getCategoryColor(relatedCategory);
                   return (
-                    <motion.article
+                    <article
                       key={relatedPost.id}
                       className="group bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
-                      variants={fadeInUp}
                     >
                       <Link
                         href={`/blog/${relatedPost.slug}`}
                         aria-label={`Read ${relatedPost.title}`}
                       >
-                        <div className="relative">
-                          <img
+                        <div className="relative h-40 sm:h-48 overflow-hidden">
+                          <Image
                             src={relatedPost.image}
                             alt={`${relatedPost.title} - Related blog post`}
-                            width="400"
-                            height="200"
-                            loading="lazy"
-                            className="w-full h-40 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           <span
                             className={`absolute top-3 left-3 ${bg} ${text} text-xs font-medium py-1 px-2 rounded-full shadow-sm`}
                           >
-                            {relatedPost.category[0] || "Uncategorized"}
+                            {relatedCategory}
                           </span>
                         </div>
                         <div className="p-4 sm:p-5">
@@ -577,16 +369,14 @@ const BlogPostPage: React.FC = () => {
                           </p>
                         </div>
                       </Link>
-                    </motion.article>
+                    </article>
                   );
                 })}
               </div>
-            </motion.section>
+            </section>
           )}
         </div>
       </section>
     </>
   );
-};
-
-export default BlogPostPage;
+}

@@ -10,16 +10,22 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    let frame = 0;
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const next = window.scrollY > 50;
+        setIsScrolled((prev) => (prev === next ? prev : next));
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import HeroSection from '@/components/home/HeroSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import { getAllBlogs } from '@/services/api';
@@ -235,13 +236,20 @@ export default function HomePageClient() {
     }
   };
 
+  const scrollFrame = useRef(0);
   const handleScroll = () => {
-    if (scrollRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
-    }
+    if (scrollFrame.current) return;
+    scrollFrame.current = requestAnimationFrame(() => {
+      scrollFrame.current = 0;
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        setCanScrollLeft(scrollLeft > 5);
+        setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+      }
+    });
   };
+
+  useEffect(() => () => cancelAnimationFrame(scrollFrame.current), []);
 
   // Home Page Schemas
   const orgSchema = {
@@ -405,7 +413,7 @@ export default function HomePageClient() {
               <div className="h-1 bg-white/10 rounded-full overflow-hidden">
                 <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-[88%]" />
               </div>
-              <div className="flex justify-between text-xs text-white/50 pt-2 font-bold">
+              <div className="flex justify-between text-xs text-white/70 pt-2 font-bold">
                 <span>GDN Placements</span>
                 <span>Programmatic DSPs</span>
                 <span>Mobile Apps</span>
@@ -445,7 +453,6 @@ export default function HomePageClient() {
                     <Link
                       href={dive.link}
                       className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline transition-all"
-                      aria-label={`Explore our ${dive.title} service`}
                     >
                       <span>Explore our {dive.title} solutions</span>
                       <ChevronRight className="w-4 h-4" />
@@ -458,7 +465,7 @@ export default function HomePageClient() {
                     <div className="absolute top-0 right-0 w-48 h-48 bg-blue-50 rounded-bl-[12rem] -mr-8 -mt-8 z-0" />
                     <div className="relative z-10 space-y-4">
                       <Zap className="w-8 h-8 text-blue-600" />
-                      <h5 className="font-extrabold text-gray-900 text-lg">Predictable Growth Engine</h5>
+                      <h4 className="font-extrabold text-gray-900 text-lg">Predictable Growth Engine</h4>
                       <p className="text-gray-500 text-sm leading-relaxed">Integrated technical setup ensuring 100% SEO scores, structured schema markups, and clean codebases verified on Google Search Console.</p>
                       <div className="h-2 bg-gray-200 rounded-full w-3/4" />
                       <div className="h-2 bg-gray-200 rounded-full w-1/2" />
@@ -538,7 +545,7 @@ export default function HomePageClient() {
                   <h3 className="text-xs font-bold uppercase text-blue-400 tracking-wider">{study.client}</h3>
                   <div className="space-y-1 flex-grow">
                     <div className="text-4xl sm:text-5xl font-black text-white">{study.metric}</div>
-                    <div className="text-xs text-white/50 uppercase tracking-widest font-bold">{study.metricLabel}</div>
+                    <div className="text-xs text-white/70 uppercase tracking-widest font-bold">{study.metricLabel}</div>
                     <p className="text-sm text-white/70 pt-4 leading-relaxed">{study.tagline}</p>
                   </div>
                   <div className="pt-4 border-t border-white/5">
@@ -546,7 +553,7 @@ export default function HomePageClient() {
                       href={study.link}
                       className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-blue-400 transition-colors"
                     >
-                      <span>Read Case Study</span>
+                      <span>Read Case Study <span className="sr-only">: {study.client}</span></span>
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -584,7 +591,7 @@ export default function HomePageClient() {
                       <p className="text-gray-600 text-sm leading-relaxed italic">"{test.text}"</p>
                     </div>
                     <div className="flex items-center gap-3 pt-4 border-t border-gray-50 mt-4">
-                      <img src={test.photo} alt={test.name} width={40} height={40} loading="lazy" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                      <Image src={test.photo} alt={test.name} width={40} height={40} className="w-10 h-10 rounded-full object-cover shrink-0" />
                       <div>
                         <p className="font-bold text-gray-900 text-sm">{test.name}</p>
                         <p className="text-xs text-gray-500">{test.title}</p>
@@ -633,7 +640,7 @@ export default function HomePageClient() {
                   <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900">Read Sownmark Insights</h2>
                 </div>
                 <Link href="/blog" className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold rounded-full text-sm transition-all whitespace-nowrap">
-                  <span>View All Posts</span>
+                  <span>View All Blog Posts</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -642,7 +649,13 @@ export default function HomePageClient() {
                 {blogs.map((post) => (
                   <article key={post.id} className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full group">
                     <div className="h-48 overflow-hidden relative">
-                      <img src={post.image || '/logo.webp'} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <Image
+                        src={post.image || '/logo.webp'}
+                        alt={post.title}
+                        fill
+                        sizes="(min-width: 768px) 33vw, 100vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
                       <span className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-800">
                         {post.category || 'SEO'}
                       </span>
@@ -652,7 +665,7 @@ export default function HomePageClient() {
                       <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 flex-grow">{post.excerpt}</p>
                       <div className="pt-4 border-t border-gray-50">
                         <Link href={`/blog/${post.slug}`} className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700">
-                          <span>Read Article</span>
+                          <span>Read Article <span className="sr-only">: {post.title}</span></span>
                           <ChevronRight className="w-4 h-4" />
                         </Link>
                       </div>
@@ -681,7 +694,7 @@ export default function HomePageClient() {
                     className="w-full flex justify-between items-center p-6 text-left font-bold text-gray-900 hover:text-blue-600 transition-colors gap-4"
                   >
                     <span>{faq.q}</span>
-                    <span className="text-2xl font-light shrink-0 text-gray-400">
+                    <span className="text-2xl font-light shrink-0 text-gray-500" aria-hidden="true">
                       {activeFaq === idx ? '−' : '+'}
                     </span>
                   </button>
