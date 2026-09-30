@@ -107,10 +107,10 @@ const Header: React.FC<HeaderProps> = ({ isScrolled }) => {
                 src="/logo.webp"
                 alt="Sownmark"
                 width={180}
-                height={40}
+                height={36}
                 fetchPriority="high"
                 loading="eager"
-                className={`h-6 sm:h-7 w-auto transition-all duration-300 ${logoInvert}`}
+                className={`h-7 w-auto transition-all duration-300 ${logoInvert}`}
               />
             </Link>
 

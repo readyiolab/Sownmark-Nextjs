@@ -428,8 +428,8 @@ export default function HomePageClient() {
                 className={`grid lg:grid-cols-12 gap-12 items-center ${idx % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
               >
                 <div className={`lg:col-span-6 space-y-6 ${idx % 2 !== 0 ? 'lg:order-2' : ''}`}>
-                  <h3 className="text-gray-400 font-extrabold uppercase tracking-widest text-xs">{dive.subtitle}</h3>
-                  <h4 className="text-3xl sm:text-4xl font-extrabold text-[#1a2957] leading-tight">{dive.title}</h4>
+                  <p className="text-gray-600 font-extrabold uppercase tracking-widest text-xs">{dive.subtitle}</p>
+                  <h3 className="text-3xl sm:text-4xl font-extrabold text-[#1a2957] leading-tight">{dive.title}</h3>
                   <p className="text-gray-600 text-base leading-relaxed">{dive.description}</p>
 
                   <ul className="space-y-3 pt-2">
@@ -445,8 +445,9 @@ export default function HomePageClient() {
                     <Link
                       href={dive.link}
                       className="inline-flex items-center gap-1 text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline transition-all"
+                      aria-label={`Explore our ${dive.title} service`}
                     >
-                      <span>Learn more about this capability</span>
+                      <span>Explore our {dive.title} solutions</span>
                       <ChevronRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -583,9 +584,9 @@ export default function HomePageClient() {
                       <p className="text-gray-600 text-sm leading-relaxed italic">"{test.text}"</p>
                     </div>
                     <div className="flex items-center gap-3 pt-4 border-t border-gray-50 mt-4">
-                      <img src={test.photo} alt={test.name} className="w-10 h-10 rounded-full object-cover shrink-0" />
+                      <img src={test.photo} alt={test.name} width={40} height={40} loading="lazy" className="w-10 h-10 rounded-full object-cover shrink-0" />
                       <div>
-                        <h4 className="font-bold text-gray-900 text-sm">{test.name}</h4>
+                        <p className="font-bold text-gray-900 text-sm">{test.name}</p>
                         <p className="text-xs text-gray-500">{test.title}</p>
                       </div>
                     </div>

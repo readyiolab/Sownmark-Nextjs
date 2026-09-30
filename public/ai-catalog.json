@@ -1,0 +1,33 @@
+{
+  "name": "Sownmark Solutions",
+  "description": "India's leading full-service digital marketing and custom software development agency specializing in GEO, AEO, SEO, display ads, web development, and tech hiring solutions.",
+  "url": "https://sownmark.com",
+  "version": "1.0.0",
+  "resources": [
+    {
+      "name": "Digital Marketing Services",
+      "description": "Full-funnel digital marketing services including GEO, AEO, SEO, display ads, and social media management.",
+      "url": "https://sownmark.com/services/digital-marketing"
+    },
+    {
+      "name": "SEO & Generative Engine Optimization",
+      "description": "Optimization for search engines and generative AI answer engines like ChatGPT, Perplexity, and Gemini.",
+      "url": "https://sownmark.com/services/seo"
+    },
+    {
+      "name": "Software Development Services",
+      "description": "Custom full-stack web and software development, SaaS engineering, and enterprise architecture.",
+      "url": "https://sownmark.com/services/software-development"
+    },
+    {
+      "name": "Case Studies",
+      "description": "Proven performance marketing and software engineering case studies and client outcomes.",
+      "url": "https://sownmark.com/case-studies"
+    },
+    {
+      "name": "Contact Sownmark",
+      "description": "Contact form for business inquiries, strategy consultation, and client partnerships.",
+      "url": "https://sownmark.com/contact"
+    }
+  ]
+}

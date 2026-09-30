@@ -1,0 +1,15 @@
+# Sownmark Solutions
+
+> India's leading full-service digital marketing and custom software agency.
+
+## Services Offered
+- **Digital Marketing**: Full-funnel digital marketing services, performance advertising, and growth strategy.
+- **Search Engine & Generative Engine Optimisation (GEO/AEO/SEO)**: Getting brands cited by traditional engines and generative AI tools (ChatGPT, Perplexity, Gemini).
+- **Display Advertising**: Programmatic advertising, GDN placement, high-converting banner and video ad creation.
+- **Social Media Management**: Organic social growth, content strategy, brand community engagement.
+- **Web & Software Development**: React, Next.js, Node.js, SaaS development, CRM & ERP custom architecture.
+- **Hiring & Talent Solutions**: Tech and marketing talent recruitment and staffing.
+
+## Contact & Location
+- Website: https://sownmark.com
+- Inquiries: https://sownmark.com/contact

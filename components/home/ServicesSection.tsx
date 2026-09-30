@@ -110,14 +110,15 @@ const ServicesSection: React.FC = React.memo(() => {
               <Link
                 href={service.link}
                 className="inline-flex items-center text-xs font-bold text-blue-400 hover:text-cyan-400 tracking-wider uppercase transition-colors duration-300 mt-auto pt-2"
-                aria-label={`Explore our ${service.title} service`}
+                aria-label={`Learn more about ${service.title}`}
               >
-                <span>Learn More</span>
+                <span>Learn More <span className="sr-only">about {service.title}</span></span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-3.5 w-3.5 ml-1.5 transform group-hover:translate-x-1 transition-transform"
                   viewBox="0 0 20 20"
                   fill="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"

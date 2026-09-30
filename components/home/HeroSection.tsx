@@ -78,6 +78,10 @@ const HeroSection: React.FC = () => {
                 <img
                   src="/hero.webp"
                   alt="AI Marketing Growth"
+                  width={600}
+                  height={500}
+                  fetchPriority="high"
+                  loading="eager"
                   className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
                   onError={(e) => {
                     // Keep layout background if image is not copied yet
@@ -153,7 +157,7 @@ const HeroSection: React.FC = () => {
                 color: 'hover:text-[#19C37D]',
                 icon: (
                   <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/chatgpt.png" alt="ChatGPT" className="w-6 h-6 object-contain" />
+                    <img src="/icons/chatgpt.png" alt="ChatGPT" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
                   </div>
                 )
               },
@@ -162,7 +166,7 @@ const HeroSection: React.FC = () => {
                 color: 'hover:text-[#22C55E]',
                 icon: (
                   <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/perplexity.png" alt="Perplexity" className="w-6 h-6 object-contain" />
+                    <img src="/icons/perplexity.png" alt="Perplexity" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
                   </div>
                 )
               },
@@ -171,7 +175,7 @@ const HeroSection: React.FC = () => {
                 color: 'hover:text-[#4B90E2]',
                 icon: (
                   <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/gemini.webp" alt="Gemini" className="w-6 h-6 object-contain" />
+                    <img src="/icons/gemini.webp" alt="Gemini" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
                   </div>
                 )
               },
@@ -180,7 +184,7 @@ const HeroSection: React.FC = () => {
                 color: 'hover:text-[#D97706]',
                 icon: (
                   <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/claude.png" alt="Claude" className="w-6 h-6 object-contain" />
+                    <img src="/icons/claude.png" alt="Claude" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
                   </div>
                 )
               },
@@ -189,7 +193,7 @@ const HeroSection: React.FC = () => {
                 color: 'hover:text-[#3B82F6]',
                 icon: (
                   <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                    <img src="/icons/copilot.png" alt="Copilot" className="w-6 h-6 object-contain" />
+                    <img src="/icons/copilot.png" alt="Copilot" width={24} height={24} loading="lazy" className="w-6 h-6 object-contain" />
                   </div>
                 )
               }
