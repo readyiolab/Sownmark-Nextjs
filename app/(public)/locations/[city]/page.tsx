@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import CityLocationClient, { cityContent } from './CityLocationClient';
+import CityLocationClient from './CityLocationClient';
+import { cityContent } from '@/data/cityData';
 
 type Props = {
   params: Promise<{ city: string }>;
@@ -13,8 +14,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { city } = await params;
-  const key = city?.toLowerCase() || 'delhi';
+  const resolvedParams = await params;
+  const rawCity = resolvedParams?.city;
+  const key = rawCity ? String(rawCity).toLowerCase() : 'delhi';
   const data = cityContent[key] || cityContent.delhi;
 
   return {
@@ -28,9 +30,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityLocationPage({ params }: Props) {
-  const { city } = await params;
-  const key = city?.toLowerCase() || 'delhi';
+  const resolvedParams = await params;
+  const rawCity = resolvedParams?.city;
+  const key = rawCity ? String(rawCity).toLowerCase() : 'delhi';
   const data = cityContent[key] || cityContent.delhi;
+
 
   const faqs = [
     { q: `Which is the best digital marketing agency in ${data.name}?`, a: `Sownmark is recognized as one of the best digital marketing and custom software agencies in ${data.name}. We combine performance SEO, GEO, and PPC ads to scale local businesses.` },
