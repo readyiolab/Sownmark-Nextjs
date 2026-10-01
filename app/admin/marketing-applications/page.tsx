@@ -4,10 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, ArrowLeft } from 'lucide-react';
+import { User, Mail, Phone, ArrowLeft, TrendingUp, Search, Calendar, FileText, CheckCircle2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function DigitalMarketingApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([]);
@@ -56,104 +58,96 @@ export default function DigitalMarketingApplicationsPage() {
     setLoading(false);
   };
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6 },
-  };
-
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="max-w-7xl mx-auto p-4 sm:p-6"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
     >
-      <motion.div {...fadeInUp} className="mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
-          Digital Marketing Applications
-        </h2>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <Button asChild variant="default" className="bg-[#1a2957] hover:bg-blue-900 text-white">
-            <Link href="/admin/dashboard" className="inline-flex items-center">
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Dashboard
-            </Link>
-          </Button>
-          <Input
-            type="number"
-            placeholder="Min Referrals (e.g., 10)"
-            value={filters.minReferrals}
-            onChange={(e) => setFilters({ ...filters, minReferrals: e.target.value, page: 1 })}
-            className="w-full sm:w-64"
-          />
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0">
+            <TrendingUp className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Marketing Inquiries & Applications
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Review agency proposals, marketing candidate submissions, and leads ({total} total)
+            </p>
+          </div>
         </div>
-      </motion.div>
 
-      {loading ? (
-        <p className="text-foreground text-center">Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:gap-6">
-          {applications.length === 0 ? (
-            <p className="text-foreground text-center">No applications found.</p>
-          ) : (
-            applications.map((app) => (
-              <motion.div key={app.id} {...fadeInUp}>
-                <Card className="hover:shadow-lg transition-shadow duration-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg sm:text-xl">
-                      <User className="w-5 h-5 mr-2" /> {app.name}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <p className="text-muted-foreground text-sm flex items-center">
-                      <Mail className="w-4 h-4 mr-2" /> {app.email}
-                    </p>
-                    <p className="text-muted-foreground text-sm flex items-center">
-                      <Phone className="w-4 h-4 mr-2" /> {app.phone}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      Referral Code: <span className="font-medium">{app.referral_code}</span>
-                    </p>
-                    {app.referred_by && (
-                      <p className="text-muted-foreground text-sm">
-                        Referred By: <span className="font-medium">{app.referred_by}</span>
-                      </p>
-                    )}
-                    <p className="text-muted-foreground text-sm">
-                      Referrals: <span className="font-medium">{app.referral_count}</span>
-                      {app.referral_count >= 10 && (
-                        <span className="ml-2 text-green-600 font-semibold">(Top Referrer)</span>
-                      )}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                      Applied: {new Date(app.created_at).toLocaleDateString()}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
-        </div>
-      )}
-
-      <div className="mt-6 flex justify-center gap-4">
-        <Button
-          onClick={() => setFilters({ ...filters, page: Math.max(filters.page - 1, 1) })}
-          disabled={filters.page === 1}
-          variant="default"
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
-          disabled={filters.page * filters.limit >= total}
-          variant="default"
-        >
-          Next
+        <Button asChild variant="outline" className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100">
+          <Link href="/admin/dashboard" className="gap-2 text-xs font-semibold">
+            <ArrowLeft className="w-4 h-4" /> Back to Dashboard
+          </Link>
         </Button>
       </div>
+
+      {/* Content */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center min-h-[300px] gap-3">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-500 font-medium">Loading submissions...</p>
+        </div>
+      ) : applications.length === 0 ? (
+        <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3 shadow-sm">
+          <div className="bg-slate-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+            <TrendingUp className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-800">No submissions found</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            New marketing applications submitted from the landing page will appear here automatically.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {applications.map((app) => (
+            <Card key={app.id} className="rounded-2xl border-slate-200 shadow-sm bg-white overflow-hidden hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm">
+                        {app.name ? app.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <h2 className="text-base font-bold text-slate-900">{app.name}</h2>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-0.5">
+                          <span className="flex items-center gap-1"><Mail className="w-3.5 h-3.5 text-slate-400" /> {app.email}</span>
+                          {app.phone && <span className="flex items-center gap-1"><Phone className="w-3.5 h-3.5 text-slate-400" /> {app.phone}</span>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {app.portfolio_url && (
+                      <p className="text-xs text-blue-600 font-medium">
+                        Portfolio: <a href={app.portfolio_url} target="_blank" rel="noopener noreferrer" className="underline">{app.portfolio_url}</a>
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                    {app.createdAt && (
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        {new Date(app.createdAt).toLocaleDateString()}
+                      </span>
+                    )}
+                    <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs capitalize bg-slate-100 text-slate-700">
+                      {app.status || 'Received'}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }

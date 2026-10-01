@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { 
   Save, 
@@ -15,11 +16,15 @@ import {
   Settings, 
   Image as ImageIcon,
   Star,
-  Search
+  Search,
+  ArrowLeft,
+  CheckCircle2,
+  X,
+  Upload
 } from "lucide-react";
 import { createBlog, updateBlog, getBlogById } from "@/services/api";
-import EditorJSEditor from "@/components/admin/EditorJSEditor";
-import EditorJSPreview from "@/components/admin/EditorJSPreview";
+import RichContentEditor from "@/components/admin/RichContentEditor";
+import { editorJSToHtml } from "@/components/admin/editorUtils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -43,11 +48,11 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
   const [formData, setFormData] = useState({
     title: "",
     excerpt: "",
-    content: { blocks: [] },
+    content: "",
     author: "",
     author_bio: "",
-    status: "draft",
-    read_time: "",
+    status: "published",
+    read_time: "5",
     categories: "",
     tags: "",
     meta_description: "",
@@ -55,9 +60,10 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
     featured_image: null as File | null,
     current_image: "",
   });
+  const [imagePreview, setImagePreview] = useState<string>("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
@@ -75,34 +81,50 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
           setLoading(true);
           const response = await getBlogById(id);
           const blogData = response.data;
-          let parsedContent = blogData.content;
-          if (typeof blogData.content === "string") {
-            try {
-              parsedContent = JSON.parse(blogData.content);
-            } catch (err) {
-              console.error("Failed to parse content:", err);
-              parsedContent = { blocks: [] };
+
+          // Convert incoming content to rich HTML regardless of whether it was stored as EditorJS blocks or HTML
+          let initialHtml = "";
+          if (blogData.content) {
+            if (typeof blogData.content === "string") {
+              const trimmed = blogData.content.trim();
+              if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+                try {
+                  const parsed = JSON.parse(trimmed);
+                  initialHtml = editorJSToHtml(parsed);
+                } catch {
+                  initialHtml = blogData.content;
+                }
+              } else {
+                initialHtml = blogData.content;
+              }
+            } else if (typeof blogData.content === "object") {
+              initialHtml = editorJSToHtml(blogData.content);
             }
           }
+
           setFormData({
             title: blogData.title || "",
             excerpt: blogData.excerpt || "",
-            content: parsedContent || { blocks: [] },
+            content: initialHtml,
             author: blogData.author || "",
             author_bio: blogData.author_bio || "",
-            status: blogData.status || "draft",
-            read_time: blogData.read_time ? blogData.read_time.toString() : "",
+            status: blogData.status || "published",
+            read_time: blogData.read_time ? blogData.read_time.toString() : "5",
             categories: Array.isArray(blogData.category)
-              ? blogData.category.join(",")
+              ? blogData.category.join(", ")
               : blogData.category || "",
             tags: Array.isArray(blogData.tags)
-              ? blogData.tags.join(",")
+              ? blogData.tags.join(", ")
               : blogData.tags || "",
             meta_description: blogData.meta_description || "",
             is_featured: !!blogData.is_featured,
             featured_image: null,
             current_image: blogData.image || "",
           });
+
+          if (blogData.image) {
+            setImagePreview(blogData.image);
+          }
         } catch (err: any) {
           const errorMessage = err.response?.data?.error || "Failed to fetch blog";
           setError(errorMessage);
@@ -121,17 +143,21 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const target = e.target as HTMLInputElement;
     const { name, value, files, type } = target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "file" ? (files ? files[0] : null) : value,
-    }));
+
+    if (type === "file" && files && files[0]) {
+      const file = files[0];
+      setFormData((prev) => ({ ...prev, featured_image: file }));
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleContentChange = (content: any) => {
-    setFormData((prev) => ({ ...prev, content }));
+  const handleContentChange = (html: string) => {
+    setFormData((prev) => ({ ...prev, content: html }));
   };
 
-  const handleImageUpload = async (files: File[]) => {
+  const handleImageUpload = async (files: File[]): Promise<string> => {
     if (files && files.length > 0) {
       const token = localStorage.getItem("adminToken");
       const data = new FormData();
@@ -146,10 +172,10 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
           },
         });
         const result = await response.json();
-        if (result.success) {
+        if (result.success && result.url) {
           return result.url;
         } else {
-          throw new Error("Image upload failed");
+          throw new Error(result.error || "Image upload failed");
         }
       } catch (error) {
         console.error("Image upload error:", error);
@@ -163,13 +189,16 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
-    if (
-      !formData.content ||
-      !formData.content.blocks ||
-      formData.content.blocks.length === 0
-    ) {
-      setError("Content cannot be empty");
+    if (!formData.title.trim()) {
+      setError("Please enter a blog title.");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.content || !formData.content.trim() || formData.content === "<p></p>") {
+      setError("Blog content cannot be empty. Please write or paste your article.");
       setLoading(false);
       return;
     }
@@ -177,15 +206,15 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("excerpt", formData.excerpt);
-    data.append("content", JSON.stringify(formData.content));
-    data.append("author", formData.author);
-    data.append("author_bio", formData.author_bio);
+    data.append("content", formData.content);
+    data.append("author", formData.author || "Sownmark Team");
+    data.append("author_bio", formData.author_bio || "");
     data.append("status", formData.status);
-    data.append("read_time", formData.read_time);
+    data.append("read_time", formData.read_time || "5");
     data.append("categories", formData.categories);
     data.append("tags", formData.tags);
-    data.append("meta_description", formData.meta_description);
-    data.append("is_featured", formData.is_featured.toString());
+    data.append("meta_description", formData.meta_description || formData.excerpt);
+    data.append("is_featured", formData.is_featured ? "1" : "0");
 
     if (formData.featured_image) {
       data.append("featured_image", formData.featured_image);
@@ -196,14 +225,16 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
     try {
       if (isEdit && id) {
         await updateBlog(id, data);
-        alert("Blog updated successfully");
+        setSuccess("Blog post updated successfully!");
       } else {
         await createBlog(data);
-        alert("Blog created successfully");
+        setSuccess("Blog post published successfully!");
       }
-      router.push("/admin/blogs");
+      setTimeout(() => {
+        router.push("/admin/blogs");
+      }, 1000);
     } catch (err: any) {
-      setError(err.response?.data?.error || "Failed to save blog");
+      setError(err.response?.data?.error || "Failed to save blog. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -211,72 +242,97 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
 
   if (loading && isEdit) {
     return (
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
-        <Skeleton className="h-10 w-48 mb-6" />
-        <Skeleton className="h-96 w-full" />
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        <Skeleton className="h-10 w-64 rounded-xl" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <Skeleton className="lg:col-span-8 h-[600px] rounded-2xl" />
+          <Skeleton className="lg:col-span-4 h-[400px] rounded-2xl" />
+        </div>
       </div>
     );
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="max-w-7xl mx-auto space-y-8 pb-12"
+      transition={{ duration: 0.4 }}
+      className="max-w-7xl mx-auto space-y-6 pb-12"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-            {isEdit ? "Edit Blog Post" : "Create New Post"}
-          </h1>
-          <p className="text-gray-500 mt-1">
-            {isEdit ? "Update existing content and settings" : "Draft a new story for your audience"}
-          </p>
+      {/* Top Action Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" asChild className="rounded-xl hover:bg-slate-100">
+            <Link href="/admin/blogs" title="Back to blogs">
+              <ArrowLeft className="w-5 h-5 text-slate-600" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              {isEdit ? "Edit Blog Post" : "Create New Blog Post"}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Paste or type rich content directly. What you see is what will be published to the website.
+            </p>
+          </div>
         </div>
+
         <div className="flex items-center gap-3">
           <Button
-            type="button"
             variant="outline"
-            onClick={() => setShowPreview(true)}
-            className="hidden sm:flex items-center gap-2"
+            asChild
+            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100"
           >
-            <Eye className="w-4 h-4" />
-            Preview
+            <Link href="/admin/blogs">Cancel</Link>
           </Button>
-          <Button onClick={handleSubmit} disabled={loading} className="flex items-center gap-2 bg-[#1a2957] hover:bg-blue-900 text-white">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="rounded-xl bg-[#1a2957] hover:bg-blue-900 text-white shadow-md shadow-blue-950/20 px-6 font-semibold"
+          >
             {loading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Save className="w-4 h-4 mr-2" />
             )}
             {isEdit ? "Update Post" : "Publish Post"}
           </Button>
         </div>
       </div>
 
+      {/* Alerts */}
       {error && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50">
-          <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Action Required</AlertTitle>
+        <Alert variant="destructive" className="rounded-xl border-red-200 bg-red-50 text-red-900">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <AlertTitle className="font-bold">Cannot Save</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column - Main Content */}
-        <div className="lg:col-span-8 space-y-8">
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardHeader className="bg-gray-50/50 border-b">
+      {success && (
+        <Alert className="rounded-xl border-emerald-200 bg-emerald-50 text-emerald-900">
+          <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+          <AlertTitle className="font-bold">Success!</AlertTitle>
+          <AlertDescription>{success}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Main 2-Column Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Column (Main Editor & Content) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Post Title & Excerpt Card */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6">
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Content & Details</CardTitle>
+                <FileText className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">Article Details</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  Post Title
+            <CardContent className="p-6 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Post Title <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
@@ -284,231 +340,258 @@ export default function BlogForm({ isEdit = false }: BlogFormProps) {
                   value={formData.title}
                   onChange={handleChange}
                   required
-                  placeholder="Enter a catchy title..."
-                  className="text-lg font-medium py-6"
+                  placeholder="Enter a compelling title..."
+                  className="text-lg font-bold py-5 rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-100"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  Excerpt
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Short Excerpt / Summary
                 </label>
                 <Textarea
                   name="excerpt"
                   value={formData.excerpt}
                   onChange={handleChange}
-                  placeholder="Brief summary shown in lists..."
-                  rows={3}
-                  className="resize-none"
+                  placeholder="Brief 1-2 sentence preview shown on blog cards..."
+                  rows={2}
+                  className="resize-none rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-100"
                 />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  Body Content
-                </label>
-                <div className="bg-white rounded-md border shadow-inner">
-                  <EditorJSEditor
-                    content={formData.content}
-                    onChange={handleContentChange}
-                    onImageUpload={handleImageUpload}
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm">
-            <CardHeader className="bg-gray-50/50 border-b">
+          {/* Rich Content & Paste Editor Card */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6 flex flex-row items-center justify-between">
               <div className="flex items-center gap-2">
-                <User className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Author Information</CardTitle>
+                <FileText className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">
+                  Article Body (Copy & Paste Supported)
+                </CardTitle>
+              </div>
+              <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                WYSIWYG & HTML
+              </span>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-2">
+                <p className="text-xs text-slate-500">
+                  You can copy content from Google Docs, MS Word, or another website and paste it directly. Headings, bold, italics, tables, and images will be preserved and show on the website as-is.
+                </p>
+                <RichContentEditor
+                  value={formData.content}
+                  onChange={handleContentChange}
+                  onImageUpload={handleImageUpload}
+                  placeholder="Paste or write your article content here..."
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Author Information Card */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">Author Details</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Author Name</label>
+            <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Author Name</label>
                 <Input
                   type="text"
                   name="author"
                   value={formData.author}
                   onChange={handleChange}
-                  required
-                  placeholder="Writer's name"
+                  placeholder="e.g. Deepak Kumar"
+                  className="rounded-xl border-slate-200"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Author Bio</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Author Role / Bio</label>
                 <Input
                   type="text"
                   name="author_bio"
                   value={formData.author_bio}
                   onChange={handleChange}
-                  placeholder="Short description of the author"
+                  placeholder="e.g. Lead Digital Strategist at Sownmark"
+                  className="rounded-xl border-slate-200"
                 />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column - Settings & SEO */}
-        <div className="lg:col-span-4 space-y-8">
-          <Card className="border-none shadow-sm">
-            <CardHeader className="bg-gray-50/50 border-b">
+        {/* Right Column (Publishing Options & Featured Image) */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Publish Settings */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6">
               <div className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Publish Settings</CardTitle>
+                <Settings className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">Publishing Options</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Layers className="w-4 h-4" /> Status
-                </label>
+            <CardContent className="p-6 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Publish Status</label>
                 <Select
                   value={formData.status}
-                  onValueChange={(v) => setFormData(p => ({ ...p, status: v }))}
+                  onValueChange={(val) => setFormData((prev) => ({ ...prev, status: val }))}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full rounded-xl border-slate-200">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value="published">Published (Live on Website)</SelectItem>
+                    <SelectItem value="draft">Draft (Hidden)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Clock className="w-4 h-4" /> Read Time (min)
-                </label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Estimated Read Time (minutes)</label>
                 <Input
                   type="number"
                   name="read_time"
                   value={formData.read_time}
                   onChange={handleChange}
-                  min="0"
+                  min="1"
+                  className="rounded-xl border-slate-200"
                 />
               </div>
 
               <div className="pt-2">
-                <label className="flex items-center gap-3 p-3 bg-blue-50/50 rounded-lg border border-blue-100 cursor-pointer hover:bg-blue-50 transition-colors">
+                <label className="flex items-center gap-3 p-3.5 bg-blue-50/60 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-50 transition-colors">
                   <Checkbox
                     checked={formData.is_featured}
-                    onCheckedChange={(c) => setFormData(p => ({ ...p, is_featured: Boolean(c) }))}
+                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, is_featured: Boolean(checked) }))}
                   />
                   <div className="flex items-center gap-2 text-sm font-semibold text-blue-900">
-                    <Star className="w-4 h-4 fill-blue-500 text-blue-500" />
-                    Featured on Homepage
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    Feature on Homepage
                   </div>
                 </label>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm">
-            <CardHeader className="bg-gray-50/50 border-b">
+          {/* Featured Cover Image */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6">
               <div className="flex items-center gap-2">
-                <ImageIcon className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Featured Image</CardTitle>
+                <ImageIcon className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">Featured Image</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              {isEdit && formData.current_image && !formData.featured_image && (
-                <div className="relative group rounded-lg overflow-hidden border">
+              {imagePreview ? (
+                <div className="relative group rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                   <img
-                    src={formData.current_image}
-                    alt="Cover"
-                    className="w-full h-40 object-cover"
+                    src={imagePreview}
+                    alt="Cover preview"
+                    className="w-full h-44 object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-white text-xs font-medium">Current Image</span>
+                  <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <label className="cursor-pointer bg-white text-slate-800 text-xs font-semibold px-3 py-1.5 rounded-lg shadow hover:bg-slate-100 transition">
+                      Change Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleChange}
+                        name="featured_image"
+                        className="hidden"
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagePreview("");
+                        setFormData((p) => ({ ...p, featured_image: null, current_image: "" }));
+                      }}
+                      className="bg-red-600 text-white p-1.5 rounded-lg shadow hover:bg-red-700 transition"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors p-4 text-center">
+                  <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                  <span className="text-xs font-bold text-slate-700">Click to upload cover image</span>
+                  <span className="text-[11px] text-slate-400 mt-1">PNG, JPG, or WEBP (up to 5MB)</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChange}
+                    name="featured_image"
+                    className="hidden"
+                  />
+                </label>
               )}
-              <div className="flex flex-col gap-2">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleChange}
-                  name="featured_image"
-                  className="text-xs"
-                />
-                <p className="text-[10px] text-gray-400">Recommended: 1200x630px JPG or WEBP</p>
-              </div>
             </CardContent>
           </Card>
 
-          <Card className="border-none shadow-sm">
-            <CardHeader className="bg-gray-50/50 border-b">
+          {/* Categorization & SEO */}
+          <Card className="rounded-2xl border-slate-200 shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/70 border-b border-slate-200 py-4 px-6">
               <div className="flex items-center gap-2">
-                <Search className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-lg">Categorization & SEO</CardTitle>
+                <Search className="w-4 h-4 text-blue-600" />
+                <CardTitle className="text-base font-bold text-slate-800">Categories & SEO</CardTitle>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Layers className="w-4 h-4" /> Categories
+            <CardContent className="p-6 space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Category (Comma separated)
                 </label>
                 <Input
                   name="categories"
                   value={formData.categories}
                   onChange={handleChange}
-                  placeholder="News, Updates, Tips..."
+                  placeholder="e.g. Marketing Tips, SEO, Web Dev"
+                  className="rounded-xl border-slate-200"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Tag className="w-4 h-4" /> Tags
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Tags (Comma separated)
                 </label>
                 <Input
                   name="tags"
                   value={formData.tags}
                   onChange={handleChange}
-                  placeholder="react, tech, future..."
+                  placeholder="e.g. digital marketing, google ads, branding"
+                  className="rounded-xl border-slate-200"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Meta Description</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  SEO Meta Description
+                </label>
                 <Textarea
                   name="meta_description"
                   value={formData.meta_description}
                   onChange={handleChange}
-                  placeholder="Optimized for search engines..."
-                  rows={2}
+                  placeholder="Search engine summary (recommended under 160 chars)..."
+                  rows={3}
                   maxLength={160}
-                  className="text-xs"
+                  className="resize-none rounded-xl border-slate-200 text-xs"
                 />
-                <p className="text-[10px] text-gray-400 text-right">
-                  {formData.meta_description?.length || 0}/160
-                </p>
+                <div className="flex justify-between text-[11px] text-slate-400">
+                  <span>Google search snippet</span>
+                  <span>{formData.meta_description?.length || 0}/160</span>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
-      {/* Mobile Preview Button */}
-      <div className="sm:hidden fixed bottom-6 right-6 shadow-2xl z-50">
-        <Button
-          type="button"
-          size="icon"
-          className="rounded-full h-14 w-14 bg-[#1a2957] text-white"
-          onClick={() => setShowPreview(true)}
-        >
-          <Eye className="w-6 h-6" />
-        </Button>
-      </div>
-      {showPreview && (
-        <EditorJSPreview
-          content={formData.content}
-          onClose={() => setShowPreview(false)}
-        />
-      )}
     </motion.div>
   );
 }

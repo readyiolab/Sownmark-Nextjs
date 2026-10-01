@@ -15,6 +15,11 @@ import {
   Share2,
   AlertCircle,
   Search,
+  Plus,
+  ExternalLink,
+  Sparkles,
+  Calendar,
+  X,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -46,6 +51,7 @@ import {
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -85,134 +91,220 @@ export default function BlogListPage() {
       await deleteBlog(id, token);
       setBlogs(blogs.filter((blog) => blog.id !== id));
     } catch (err) {
-      setError("Failed to delete blog");
+      setError("Failed to delete blog post");
     }
   };
 
-  const filteredBlogs = blogs.filter((blog) => 
-    blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (Array.isArray(blog.category) && blog.category.some((c: string) => c.toLowerCase().includes(searchTerm.toLowerCase())))
-  );
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesSearch =
+      blog.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (Array.isArray(blog.category) && blog.category.some((c: string) => c.toLowerCase().includes(searchTerm.toLowerCase()))) ||
+      (typeof blog.category === 'string' && blog.category.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    const matchesStatus =
+      statusFilter === "all" || blog.status?.toLowerCase() === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-medium text-slate-500">Loading blog articles...</p>
       </div>
     );
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-7xl mx-auto space-y-6"
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-xl shadow-sm border">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
+      {/* Page Header Card */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
             <FileText className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">All Blogs</h1>
-            <p className="text-gray-500 text-sm">Manage your published and draft stories ({blogs.length} total)</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Blog Management</h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Manage stories, review drafted content, and publish updates to the website ({blogs.length} articles)
+            </p>
           </div>
         </div>
-        <Button asChild className="bg-blue-600 hover:bg-blue-700">
+
+        <Button asChild className="rounded-xl bg-[#1a2957] hover:bg-blue-900 text-white font-semibold shadow-md shadow-blue-950/20 px-5">
           <Link href="/admin/blog/create" className="gap-2">
-            <Edit className="w-4 h-4" />
+            <Plus className="w-4 h-4" />
             Create New Blog
           </Link>
         </Button>
       </div>
 
-      <div className="relative group">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-        <Input 
-          placeholder="Search by title or category..." 
-          className="pl-10 h-12 bg-white border-gray-200 focus:ring-blue-100"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      {/* Filter and Search Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
+        {/* Status Pill Filters */}
+        <div className="flex items-center space-x-1">
+          {(["all", "published", "draft"] as const).map((filter) => (
+            <Button
+              key={filter}
+              type="button"
+              variant={statusFilter === filter ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setStatusFilter(filter)}
+              className={`rounded-xl text-xs font-semibold capitalize h-9 px-3.5 ${
+                statusFilter === filter
+                  ? "bg-[#1a2957] text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+            >
+              {filter === "all" ? `All (${blogs.length})` : filter}
+            </Button>
+          ))}
+        </div>
+
+        {/* Search Input */}
+        <div className="relative flex-1 sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Input 
+            placeholder="Search by title or category..." 
+            className="pl-9 h-9 text-xs bg-slate-50 border-slate-200 rounded-xl focus:bg-white"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* Error Alert */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="rounded-2xl border-red-200 bg-red-50 text-red-900">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <AlertDescription className="text-xs">{error}</AlertDescription>
         </Alert>
       )}
 
+      {/* Main Table or Empty State */}
       {filteredBlogs.length === 0 ? (
-        <div className="bg-white p-12 rounded-xl border text-center space-y-3">
-          <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-gray-400">
-            <Search className="w-8 h-8" />
+        <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3 shadow-sm">
+          <div className="bg-slate-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+            <Search className="w-7 h-7" />
           </div>
-          <p className="text-gray-500 font-medium">{searchTerm ? "No blogs match your search" : "No blogs available yet"}</p>
+          <h3 className="text-base font-bold text-slate-800">
+            {searchTerm ? "No blogs match your search query" : "No blogs available yet"}
+          </h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            {searchTerm
+              ? "Try adjusting your search terms or clearing status filters."
+              : "Start drafting and publishing articles to educate your audience."}
+          </p>
+          {searchTerm && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => { setSearchTerm(""); setStatusFilter("all"); }}
+              className="rounded-xl text-xs"
+            >
+              Reset filters
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           {/* Desktop Table View */}
-          <div className="hidden md:block">
+          <div className="hidden md:block overflow-x-auto">
             <Table>
-              <TableHeader className="bg-gray-50">
+              <TableHeader className="bg-slate-50/70">
                 <TableRow>
-                  <TableHead className="font-semibold text-gray-700">Author & Title</TableHead>
-                  <TableHead className="font-semibold text-gray-700 w-[300px]">Excerpt</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-center">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-center">Engagement</TableHead>
-                  <TableHead className="font-semibold text-gray-700 text-right pr-6">Actions</TableHead>
+                  <TableHead className="font-bold text-slate-700 text-xs uppercase tracking-wider pl-6 py-4">Title & Author</TableHead>
+                  <TableHead className="font-bold text-slate-700 text-xs uppercase tracking-wider w-[260px]">Summary</TableHead>
+                  <TableHead className="font-bold text-slate-700 text-xs uppercase tracking-wider text-center">Status</TableHead>
+                  <TableHead className="font-bold text-slate-700 text-xs uppercase tracking-wider text-center">Engagement</TableHead>
+                  <TableHead className="font-bold text-slate-700 text-xs uppercase tracking-wider text-right pr-6">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredBlogs.map((blog) => (
-                  <TableRow key={blog.id} className="hover:bg-blue-50/30 transition-colors">
-                    <TableCell>
+                  <TableRow key={blog.id} className="hover:bg-slate-50/70 transition-colors">
+                    <TableCell className="pl-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-bold text-gray-900 line-clamp-1">{blog.title}</span>
-                        <span className="text-xs text-blue-600 font-medium">By {blog.author || "Unknown"}</span>
+                        <Link
+                          href={`/admin/blog/edit/${blog.id}`}
+                          className="font-bold text-slate-900 hover:text-blue-600 transition-colors line-clamp-1 text-sm"
+                        >
+                          {blog.title}
+                        </Link>
+                        <span className="text-xs text-slate-500 mt-0.5">By {blog.author || "Sownmark Team"}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <p className="text-xs text-gray-500 italic line-clamp-2 leading-relaxed">
-                        {blog.excerpt || "No summary provided..."}
+
+                    <TableCell className="py-4">
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                        {blog.excerpt || "No summary provided"}
                       </p>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant={blog.status === "published" ? "default" : "secondary"} className="capitalize px-3 py-0.5">
+
+                    <TableCell className="text-center py-4">
+                      <Badge
+                        variant={blog.status === "published" ? "default" : "secondary"}
+                        className={`rounded-full px-3 py-0.5 text-xs font-semibold capitalize ${
+                          blog.status === "published"
+                            ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                            : "bg-amber-100 text-amber-800 border border-amber-200"
+                        }`}
+                      >
                         {blog.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-3 text-gray-500">
-                        <span className="flex items-center gap-1 text-[11px]"><Heart className="w-3 h-3 text-red-400" /> {blog.likes || 0}</span>
-                        <span className="flex items-center gap-1 text-[11px]"><Share2 className="w-3 h-3 text-blue-400" /> {blog.shares || 0}</span>
+
+                    <TableCell className="text-center py-4">
+                      <div className="flex items-center justify-center gap-3 text-slate-500 text-xs">
+                        <span className="flex items-center gap-1 font-medium"><Heart className="w-3.5 h-3.5 text-rose-500" /> {blog.likes || 0}</span>
+                        <span className="flex items-center gap-1 font-medium"><Share2 className="w-3.5 h-3.5 text-blue-500" /> {blog.shares || 0}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right pr-6">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-blue-600">
-                          <Link href={`/admin/blog/edit/${blog.id}`}><Edit className="w-4 h-4" /></Link>
+
+                    <TableCell className="text-right pr-6 py-4">
+                      <div className="inline-flex items-center gap-1">
+                        <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 rounded-lg text-slate-600 hover:text-blue-600">
+                          <Link href={`/admin/blog/edit/${blog.id}`} title="Edit Post">
+                            <Edit className="w-4 h-4" />
+                          </Link>
                         </Button>
-                        <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 text-gray-500">
-                          <Link href={`/admin/blog/${blog.id}`}><Eye className="w-4 h-4" /></Link>
+                        <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 rounded-lg text-slate-600 hover:text-blue-600">
+                          <Link href={`/blog/${blog.slug}`} target="_blank" title="View live on website">
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
                         </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50">
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
+                          <AlertDialogContent className="rounded-2xl">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Delete this post?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently remove "{blog.title}". This action cannot be undone.
+                              <AlertDialogTitle className="font-bold">Delete Blog Post?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm">
+                                Are you sure you want to delete <span className="font-semibold text-slate-900">"{blog.title}"</span>? This will permanently remove the article from the website.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel className="border-none">Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(blog.id)} className="bg-red-600 hover:bg-red-700">Delete Permanently</AlertDialogAction>
+                              <AlertDialogCancel className="rounded-xl border-slate-200">Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(blog.id)} className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white">
+                                Delete Permanently
+                              </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -225,37 +317,48 @@ export default function BlogListPage() {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden divide-y">
+          <div className="md:hidden divide-y divide-slate-100">
             {filteredBlogs.map((blog) => (
-              <div key={blog.id} className="p-4 bg-white active:bg-gray-50 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge variant={blog.status === "published" ? "default" : "secondary"} className="text-[10px] h-5">
+              <div key={blog.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <Link href={`/admin/blog/edit/${blog.id}`} className="font-bold text-slate-900 text-sm line-clamp-2">
+                      {blog.title}
+                    </Link>
+                    <span className="text-xs text-slate-500 mt-0.5 block">By {blog.author || "Sownmark Team"}</span>
+                  </div>
+                  <Badge
+                    variant={blog.status === "published" ? "default" : "secondary"}
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold capitalize shrink-0 ${
+                      blog.status === "published"
+                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                        : "bg-amber-100 text-amber-800 border border-amber-200"
+                    }`}
+                  >
                     {blog.status}
                   </Badge>
-                  <div className="flex gap-2">
-                    <Link href={`/admin/blog/edit/${blog.id}`} className="p-1 text-blue-600"><Edit className="w-4 h-4" /></Link>
-                    <Link href={`/admin/blog/${blog.id}`} className="p-1 text-gray-500"><Eye className="w-4 h-4" /></Link>
-                  </div>
                 </div>
-                <h3 className="font-bold text-gray-900 mb-1 leading-tight">{blog.title}</h3>
-                <p className="text-xs text-gray-500 line-clamp-2 mb-3">{blog.excerpt}</p>
-                <div className="flex items-center justify-between">
-                   <div className="flex gap-4 text-gray-400">
-                    <span className="flex items-center gap-1 text-xs"><Heart className="w-3 h-3" /> {blog.likes || 0}</span>
-                    <span className="flex items-center gap-1 text-xs"><Share2 className="w-3 h-3" /> {blog.shares || 0}</span>
+
+                {blog.excerpt && (
+                  <p className="text-xs text-slate-600 line-clamp-2">{blog.excerpt}</p>
+                )}
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5 text-rose-500" /> {blog.likes || 0}</span>
+                    <span className="flex items-center gap-1"><Share2 className="w-3.5 h-3.5 text-blue-500" /> {blog.shares || 0}</span>
                   </div>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-7 px-2 text-red-500 text-xs">Delete</Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader><AlertDialogTitle>Confirm Delete</AlertDialogTitle></AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Back</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(blog.id)} className="bg-red-600">Delete</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" asChild className="h-8 rounded-lg text-xs">
+                      <Link href={`/admin/blog/edit/${blog.id}`}>Edit</Link>
+                    </Button>
+                    <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0 rounded-lg text-slate-600">
+                      <Link href={`/blog/${blog.slug}`} target="_blank">
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

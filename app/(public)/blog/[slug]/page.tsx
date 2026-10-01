@@ -112,48 +112,98 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const editorJSToHtml = (rawContent: string | { blocks: any[] }): string => {
+  if (!rawContent) return "<p>No content available</p>";
+
   if (typeof rawContent === "string") {
-    try {
-      const parsed = JSON.parse(rawContent);
-      return editorJSToHtml(parsed);
-    } catch {
-      return rawContent;
+    const trimmed = rawContent.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return editorJSToHtml(parsed);
+      } catch {
+        return rawContent;
+      }
     }
+    return rawContent;
   }
+
   if (!rawContent || !("blocks" in rawContent) || !Array.isArray(rawContent.blocks)) {
     return "<p>No content available</p>";
   }
+
   return rawContent.blocks
     .map((block) => {
+      if (!block || !block.type) return "";
       switch (block.type) {
         case "paragraph":
-          return `<p class="text-gray-700 leading-relaxed">${
-            block.data.text || ""
-          }</p>`;
-        case "header":
-          const level = block.data.level || 2;
-          return `<h${level} class="text-gray-900 font-bold mt-4 mb-2 ${
-            level === 1 ? "text-3xl" : level === 2 ? "text-2xl" : "text-xl"
-          }">${block.data.text || ""}</h${level}>`;
-        case "list":
-          const tag = block.data.style === "ordered" ? "ol" : "ul";
-          const items = (block.data.items || [])
-            .map(
-              (item: any) =>
-                `<li class="text-gray-700">${item.content || item || ""}</li>`
-            )
+          return `<p class="text-gray-700 leading-relaxed my-3">${block.data?.text || ""}</p>`;
+
+        case "header": {
+          const level = block.data?.level || 2;
+          const sizeClass =
+            level === 1 ? "text-3xl font-extrabold" :
+            level === 2 ? "text-2xl font-bold" :
+            level === 3 ? "text-xl font-bold" : "text-lg font-semibold";
+          return `<h${level} class="text-gray-900 ${sizeClass} mt-6 mb-3 tracking-tight">${block.data?.text || ""}</h${level}>`;
+        }
+
+        case "list": {
+          const tag = block.data?.style === "ordered" ? "ol" : "ul";
+          const listClass = block.data?.style === "ordered" ? "list-decimal" : "list-disc";
+          const items = (block.data?.items || [])
+            .map((item: any) => {
+              const text = typeof item === "object" && item !== null ? (item.content || "") : String(item || "");
+              return `<li class="text-gray-700 my-1 leading-relaxed">${text}</li>`;
+            })
             .join("");
-          return items
-            ? `<${tag} class="list-${
-                block.data.style === "ordered" ? "decimal" : "disc"
-              } pl-6 my-2">${items}</${tag}>`
-            : "";
+          return `<${tag} class="${listClass} pl-6 my-4 space-y-1">${items}</${tag}>`;
+        }
+
+        case "quote":
+          return `
+            <blockquote class="border-l-4 border-blue-600 bg-blue-50/40 pl-4 pr-3 py-2 italic text-gray-700 my-4 rounded-r-lg">
+              <p class="mb-1">${block.data?.text || ""}</p>
+              ${block.data?.caption ? `<cite class="block text-xs font-semibold text-gray-500 not-italic uppercase tracking-wide">— ${block.data.caption}</cite>` : ""}
+            </blockquote>`;
+
         case "image":
-          return `<img src="${block.data.file?.url || ""}" alt="${
-            block.data.caption || "Image"
-          }" loading="lazy" class="w-full max-w-md h-auto rounded-lg my-4 mx-auto object-cover" />`;
+          return `
+            <figure class="my-6">
+              <img src="${block.data?.file?.url || block.data?.url || ""}" alt="${block.data?.caption || "Blog image"}" class="w-full max-w-2xl h-auto rounded-xl shadow-md my-2 mx-auto object-cover" loading="lazy" />
+              ${block.data?.caption ? `<figcaption class="text-center text-xs text-gray-500 mt-2">${block.data.caption}</figcaption>` : ""}
+            </figure>`;
+
+        case "table": {
+          const rows = block.data?.content || [];
+          if (!Array.isArray(rows) || rows.length === 0) return "";
+          const withHeadings = block.data?.withHeadings;
+          let tableHtml = '<div class="overflow-x-auto my-6"><table class="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">';
+          rows.forEach((row: string[], rowIndex: number) => {
+            tableHtml += "<tr>";
+            row.forEach((cell: string) => {
+              if (rowIndex === 0 && withHeadings) {
+                tableHtml += `<th class="bg-gray-100 p-3 text-left font-semibold text-gray-900 border border-gray-200">${cell}</th>`;
+              } else {
+                tableHtml += `<td class="p-3 border border-gray-200 text-gray-700">${cell}</td>`;
+              }
+            });
+            tableHtml += "</tr>";
+          });
+          tableHtml += "</table></div>";
+          return tableHtml;
+        }
+
+        case "code":
+          return `<pre class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto my-4 font-mono text-sm leading-normal"><code>${block.data?.code || ""}</code></pre>`;
+
+        case "delimiter":
+          return `<hr class="my-8 border-gray-200 border-t-2" />`;
+
+        case "raw":
+          return block.data?.html || "";
+
         default:
-          return "";
+          return block.data?.text ? `<p class="text-gray-700 leading-relaxed my-3">${block.data.text}</p>` : "";
       }
     })
     .join("");

@@ -4,10 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { getBlogById, incrementLikes, incrementShares, createComment, deleteComment, getCommentsByBlogId } from '@/services/api';
+import { editorJSToHtml } from '@/components/admin/editorUtils';
 import { motion } from 'framer-motion';
-import { Edit, ArrowLeft, Heart, Share2, Trash2 } from 'lucide-react';
+import { Edit, ArrowLeft, Heart, Share2, Trash2, Calendar, User, Clock, Tag } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminBlogDetailPage() {
   const [blog, setBlog] = useState<any>(null);
@@ -112,31 +115,57 @@ export default function AdminBlogDetailPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="p-4 sm:p-6"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
     >
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 tracking-tight">{blog.title}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" asChild className="rounded-xl">
+            <Link href="/admin/blogs">
+              <ArrowLeft className="w-5 h-5 text-slate-600" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{blog.title}</h1>
+            <p className="text-xs text-slate-500">By {blog.author || 'Sownmark Team'} · {blog.read_time || 5} min read</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button asChild className="rounded-xl bg-[#1a2957] hover:bg-blue-900 text-white text-xs font-semibold gap-1.5">
+            <Link href={`/admin/blog/edit/${blog.id}`}>
+              <Edit className="w-3.5 h-3.5" /> Edit Article
+            </Link>
+          </Button>
+        </div>
+      </div>
+
       {error && (
-        <Alert variant="destructive" className="mb-6">
-          <AlertCircle className="h-5 w-5" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="rounded-2xl border-red-200 bg-red-50 text-red-900">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <AlertTitle className="font-bold">Error</AlertTitle>
+          <AlertDescription className="text-xs">{error}</AlertDescription>
         </Alert>
       )}
-      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md border border-gray-100">
+
+      <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
         {blog.image && (
           <img
             src={blog.image}
             alt={blog.title}
-            className="w-full h-48 sm:h-64 object-cover rounded-lg mb-4"
+            className="w-full max-h-96 object-cover rounded-xl shadow-sm"
           />
         )}
-        <p className="text-gray-600 mb-4 text-sm sm:text-base">{blog.excerpt}</p>
+        {blog.excerpt && (
+          <p className="text-sm sm:text-base text-slate-600 italic bg-slate-50 p-4 rounded-xl border border-slate-100">
+            {blog.excerpt}
+          </p>
+        )}
         <div
-          className="prose prose-sm sm:prose max-w-none text-gray-800 mb-6"
-          dangerouslySetInnerHTML={{ __html: blog.content }}
+          className="prose prose-slate max-w-none text-slate-800 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: editorJSToHtml(blog.content) }}
         />
         <div className="mt-6 space-y-2 text-sm sm:text-base">
           <p className="text-gray-900">

@@ -4,11 +4,36 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Briefcase, Search, Edit, Trash2 } from 'lucide-react';
+import { 
+  Briefcase, 
+  Search, 
+  Edit, 
+  Trash2, 
+  Plus, 
+  Users, 
+  MapPin, 
+  Clock, 
+  Building2,
+  CheckCircle2,
+  XCircle,
+  AlertCircle
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function JobsAdminPage() {
   const [jobs, setJobs] = useState<any[]>([]);
@@ -59,162 +84,199 @@ export default function JobsAdminPage() {
 
   const handleDelete = async (id: string | number) => {
     const token = localStorage.getItem('adminToken');
-    if (window.confirm('Are you sure you want to delete this job?')) {
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sownmark.com';
-        const response = await fetch(`${apiUrl}/api/jobs/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.ok) {
-          fetchJobs();
-        } else {
-          console.error('Failed to delete job');
-        }
-      } catch (error) {
-        console.error('Error deleting job:', error);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://sownmark.com';
+      const response = await fetch(`${apiUrl}/api/jobs/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        fetchJobs();
+      } else {
+        console.error('Failed to delete job');
       }
+    } catch (error) {
+      console.error('Error deleting job:', error);
     }
-  };
-
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6 },
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="p-4 sm:p-6"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
     >
-      <motion.div {...fadeInUp} className="mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">Manage Job Postings</h2>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <Button asChild variant="default" className="bg-[#1a2957] hover:bg-blue-900 text-white">
-            <Link href="/admin/jobs/create" className="inline-flex items-center">
-              <Briefcase className="w-5 h-5 mr-2" />
-              Create New Job
-            </Link>
-          </Button>
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <div className="relative w-full sm:w-64">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                name="department"
-                placeholder="Filter by department"
-                value={filters.department}
-                onChange={(e) => handleFilterChange('department', e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select
-              name="job_type"
-              value={filters.job_type}
-              onValueChange={(value) => handleFilterChange('job_type', value)}
-            >
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All Job Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Job Types</SelectItem>
-                <SelectItem value="full-time">Full-Time</SelectItem>
-                <SelectItem value="part-time">Part-Time</SelectItem>
-                <SelectItem value="freelance">Freelance</SelectItem>
-                <SelectItem value="internship">Internship</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              name="status"
-              value={filters.status}
-              onValueChange={(value) => handleFilterChange('status', value)}
-            >
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
-              </SelectContent>
-            </Select>
+      {/* Header Card */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+            <Briefcase className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Job Openings</h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Manage career positions, view applicant submissions, and edit job criteria ({total} total openings)
+            </p>
           </div>
         </div>
-      </motion.div>
 
-      {loading ? (
-        <p className="text-foreground text-center">Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:gap-6">
-          {jobs.length === 0 ? (
-            <p className="text-foreground text-center">No jobs found.</p>
-          ) : (
-            jobs.map((job) => (
-              <motion.div key={job.id} {...fadeInUp}>
-                <Card className="hover:shadow-lg transition-shadow duration-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg sm:text-xl">
-                      <Briefcase className="w-5 h-5 mr-2" />
-                      {job.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-                      <div className="space-y-2">
-                        <p className="text-muted-foreground text-sm">
-                          {job.department} • {job.job_type} • {job.location}
-                        </p>
-                        <p className="text-muted-foreground text-sm">Status: {job.status}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button asChild variant="default" size="icon">
-                          <Link href={`/admin/jobs/edit/${job.id}`} aria-label={`Edit ${job.title}`}>
-                            <Edit className="w-5 h-5" />
-                          </Link>
-                        </Button>
-                        <Button
-                          onClick={() => handleDelete(job.id)}
-                          variant="destructive"
-                          size="icon"
-                          aria-label={`Delete ${job.title}`}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
-                        <Button asChild variant="default" size="icon">
-                          <Link href={`/admin/jobs/${job.id}/applications`} aria-label={`View applications for ${job.title}`}>
-                            <Briefcase className="w-5 h-5" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
-        </div>
-      )}
-
-      <div className="mt-6 flex justify-center gap-4">
-        <Button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          variant="default"
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={page * 10 >= total}
-          variant="default"
-        >
-          Next
+        <Button asChild className="rounded-xl bg-[#1a2957] hover:bg-blue-900 text-white font-semibold shadow-md shadow-blue-950/20 px-5">
+          <Link href="/admin/jobs/create" className="gap-2">
+            <Plus className="w-4 h-4" />
+            Post New Job
+          </Link>
         </Button>
       </div>
+
+      {/* Filters Bar */}
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-3">
+        <div className="relative w-full md:flex-1">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input
+            type="text"
+            placeholder="Filter by department (e.g. Design, Tech, Sales)..."
+            value={filters.department}
+            onChange={(e) => handleFilterChange('department', e.target.value)}
+            className="pl-9 h-10 rounded-xl bg-slate-50 border-slate-200 text-xs focus:bg-white"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Select
+            value={filters.job_type || 'all'}
+            onValueChange={(val) => handleFilterChange('job_type', val)}
+          >
+            <SelectTrigger className="h-10 rounded-xl text-xs w-full sm:w-40 border-slate-200 bg-slate-50">
+              <SelectValue placeholder="Job Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="full-time">Full-Time</SelectItem>
+              <SelectItem value="part-time">Part-Time</SelectItem>
+              <SelectItem value="freelance">Freelance</SelectItem>
+              <SelectItem value="internship">Internship</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={filters.status || 'all'}
+            onValueChange={(val) => handleFilterChange('status', val)}
+          >
+            <SelectTrigger className="h-10 rounded-xl text-xs w-full sm:w-36 border-slate-200 bg-slate-50">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Content Area */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center min-h-[300px] gap-3">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-slate-500 font-medium">Fetching career postings...</p>
+        </div>
+      ) : jobs.length === 0 ? (
+        <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3 shadow-sm">
+          <div className="bg-slate-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+            <Briefcase className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-800">No job openings found</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            Try resetting your filters or post a new job vacancy to start receiving applications.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {jobs.map((job) => (
+            <Card key={job.id} className="rounded-2xl border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 bg-white overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <h2 className="text-base font-bold text-slate-900">{job.title}</h2>
+                      <Badge
+                        variant={job.status === 'open' ? 'default' : 'secondary'}
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                          job.status === 'open'
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
+                        }`}
+                      >
+                        {job.status}
+                      </Badge>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 font-medium">
+                      {job.department && (
+                        <span className="flex items-center gap-1.5">
+                          <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                          {job.department}
+                        </span>
+                      )}
+                      {job.job_type && (
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          {job.job_type}
+                        </span>
+                      )}
+                      {job.location && (
+                        <span className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                          {job.location}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                    <Button variant="outline" size="sm" asChild className="rounded-xl text-xs h-9 gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-100">
+                      <Link href={`/admin/jobs/${job.id}/applications`}>
+                        <Users className="w-3.5 h-3.5 text-blue-600" />
+                        Applications
+                      </Link>
+                    </Button>
+
+                    <Button variant="outline" size="sm" asChild className="rounded-xl text-xs h-9 gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-100">
+                      <Link href={`/admin/jobs/edit/${job.id}`}>
+                        <Edit className="w-3.5 h-3.5 text-slate-600" />
+                        Edit
+                      </Link>
+                    </Button>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-9 w-9 p-0 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="rounded-2xl">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="font-bold">Delete this job posting?</AlertDialogTitle>
+                          <AlertDialogDescription className="text-sm">
+                            Are you sure you want to delete <span className="font-semibold text-slate-900">"{job.title}"</span>? All associated applications will also be affected.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-xl border-slate-200">Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(job.id)} className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white">
+                            Delete Permanently
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 }

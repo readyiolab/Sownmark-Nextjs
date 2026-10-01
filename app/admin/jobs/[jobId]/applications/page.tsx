@@ -110,28 +110,39 @@ export default function JobApplicationsPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="max-w-7xl mx-auto p-4 sm:p-6"
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
     >
-      <motion.div {...fadeInUp} className="mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 tracking-tight">
-          Applications for {job ? job.title : 'Job'}
-        </h2>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <Button asChild variant="default" className="bg-[#1a2957] hover:bg-blue-900 text-white">
-            <Link href="/admin/jobs" className="inline-flex items-center">
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Jobs
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+            <Briefcase className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Applications for {job ? job.title : 'Job'}
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Review and screen applicant submissions for this job posting
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Button asChild variant="outline" className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold gap-1.5">
+            <Link href="/admin/jobs">
+              <ArrowLeft className="w-4 h-4" /> Back to Jobs
             </Link>
           </Button>
+
           <Select
             name="status"
             value={filters.status}
             onValueChange={(value) => setFilters({ ...filters, status: value, page: 1 })}
           >
-            <SelectTrigger className="w-full sm:w-64">
+            <SelectTrigger className="w-full sm:w-48 h-9 text-xs rounded-xl border-slate-200 bg-slate-50">
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
             <SelectContent>
@@ -144,7 +155,7 @@ export default function JobApplicationsPage() {
             </SelectContent>
           </Select>
         </div>
-      </motion.div>
+      </div>
 
       {loading ? (
         <p className="text-foreground text-center">Loading...</p>
