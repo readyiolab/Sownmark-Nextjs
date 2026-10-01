@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { LogOut, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -14,20 +14,33 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
+  const isLoginPage = pathname === '/admin/login' || pathname?.startsWith('/admin/login');
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
+    if (isLoginPage) {
+      if (token) {
+        router.push('/admin/dashboard');
+      }
+      return;
+    }
+
     if (!token) {
+      setIsAuthenticated(false);
       router.push('/admin/login');
     } else {
       setIsAuthenticated(true);
     }
-  }, [router]);
+  }, [router, pathname, isLoginPage]);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
+    localStorage.removeItem('isAdmin');
+    setIsAuthenticated(false);
     router.push('/admin/login');
   };
 
@@ -44,7 +57,12 @@ export default function AdminLayout({
     { href: '/admin/contact-messages', label: 'Contact Messages' },
   ];
 
-  if (isAuthenticated === null) {
+  // If on login page, render children directly without the admin shell
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
+
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="w-12 h-12 border-4 border-[#1a2957] border-t-transparent rounded-full animate-spin"></div>
