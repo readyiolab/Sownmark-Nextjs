@@ -123,6 +123,7 @@ export default function RichContentEditor({
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isInternalChangeRef = useRef(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sync value from props to editor DOM when value changes externally
   useEffect(() => {
@@ -136,11 +137,35 @@ export default function RichContentEditor({
     }
   }, [value]);
 
+  // Clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;
     isInternalChangeRef.current = true;
-    const html = editorRef.current.innerHTML;
-    onChange(html);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      if (editorRef.current) {
+        onChange(editorRef.current.innerHTML);
+      }
+    }, 200);
+  }, [onChange]);
+
+  const handleBlur = useCallback(() => {
+    if (!editorRef.current) return;
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    isInternalChangeRef.current = true;
+    onChange(editorRef.current.innerHTML);
   }, [onChange]);
 
   // Execute standard formatting commands
@@ -148,7 +173,10 @@ export default function RichContentEditor({
     if (typeof document === 'undefined') return;
     editorRef.current?.focus();
     document.execCommand(command, false, arg);
-    handleInput();
+    if (editorRef.current) {
+      isInternalChangeRef.current = true;
+      onChange(editorRef.current.innerHTML);
+    }
   };
 
   // Dedicated Paste Handler
@@ -530,6 +558,7 @@ export default function RichContentEditor({
           ref={editorRef}
           contentEditable
           onInput={handleInput}
+          onBlur={handleBlur}
           onPaste={handlePaste}
           className="p-5 min-h-[420px] focus:outline-none prose prose-slate max-w-none text-slate-800 leading-relaxed font-sans"
           style={{ minHeight: '420px' }}

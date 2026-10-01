@@ -57,6 +57,20 @@ export default function BlogListPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Check if we have cached blogs in this session for instant 0ms rendering
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem("admin_blogs_cache");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setBlogs(parsed);
+            setLoading(false);
+          }
+        }
+      } catch {}
+    }
+
     const token = localStorage.getItem("adminToken");
     if (!token) {
       router.push("/admin/login");
@@ -65,11 +79,15 @@ export default function BlogListPage() {
 
     const fetchBlogs = async () => {
       try {
-        setLoading(true);
         setError("");
         const response = await getAllBlogs();
         if (response.data && Array.isArray(response.data)) {
           setBlogs(response.data);
+          if (typeof window !== "undefined") {
+            try {
+              sessionStorage.setItem("admin_blogs_cache", JSON.stringify(response.data));
+            } catch {}
+          }
         } else {
           setBlogs([]);
           setError("Unexpected data format received from server");

@@ -9,6 +9,7 @@ const getBaseUrl = () => {
 
 const api = axios.create({
   baseURL: getBaseUrl(),
+  timeout: 12000,
 });
 
 // Interceptor to automatically add Authorization header with token from localStorage

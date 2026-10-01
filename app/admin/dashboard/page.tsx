@@ -88,16 +88,30 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Check if we have cached dashboard data in this session for instant 0ms rendering
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = sessionStorage.getItem('admin_dashboard_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.stats) {
+            setDashboardData(parsed);
+            setLoading(false);
+          }
+        }
+      } catch {}
+    }
+
     const token = localStorage.getItem('adminToken');
     if (!token) {
       router.push('/admin/login');
       return;
     }
-    fetchDashboardData();
+    fetchDashboardData(true);
   }, [router]);
 
-  const fetchDashboardData = async (isRefresh = false) => {
-    if (isRefresh) {
+  const fetchDashboardData = async (isBackground = false) => {
+    if (isBackground) {
       setRefreshing(true);
     } else {
       setLoading(true);
@@ -143,13 +157,22 @@ export default function AdminDashboardPage() {
 
       const stats = calculateStats(blogs, jobApplications, digitalMarketingApplications, contactMessages);
 
-      setDashboardData({
+      const newDashboardData = {
         blogs,
         jobApplications,
         digitalMarketingApplications,
         contactMessages,
         stats,
-      });
+      };
+
+      setDashboardData(newDashboardData);
+
+      // Persist in session cache for instant future loads
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('admin_dashboard_cache', JSON.stringify(newDashboardData));
+        } catch {}
+      }
 
     } catch (err) {
       setError('Failed to fetch dashboard data. Please try again.');
