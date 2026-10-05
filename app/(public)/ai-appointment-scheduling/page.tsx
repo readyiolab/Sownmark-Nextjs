@@ -3,6 +3,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
   CalendarCheck,
+  CheckCircle2,
+  Clock,
+  Shield,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -55,85 +59,83 @@ const schedulingSchema = {
 
 export default function AiAppointmentSchedulingPage() {
   return (
-    <main className="bg-slate-950 text-slate-100 min-h-screen pt-32 pb-24">
+    <main className="bg-white text-gray-900 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schedulingSchema) }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-8">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span>/</span>
-          <Link href="/ai-agents" className="hover:text-white">Multi AI Agents</Link>
-          <span>/</span>
-          <span className="text-primary font-semibold">Appointment Scheduling</span>
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
         </div>
-
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-bold uppercase tracking-wider">
             <CalendarCheck className="w-3.5 h-3.5" />
             Live Calendar Synchronization
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-6">
-            AI Appointment Scheduling Across Voice, SMS and Email
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            AI Appointment Scheduling Across Voice, SMS & Email
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
             Can AI schedule appointments? Yes. The agent checks live availability, applies your rules and books through your calendar or scheduling system, then confirms by text or email.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+            <Button asChild size="lg" className="bg-white text-[#1a2957] hover:bg-gray-100 font-bold rounded-full shadow-lg">
               <Link href="/contact#strategy-call">Book an AI Strategy Call</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-slate-800 text-slate-300 hover:bg-slate-900">
+            <Button asChild variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full">
               <Link href="/ai-lead-qualification">Next: Lead Qualification</Link>
             </Button>
           </div>
         </div>
+      </section>
 
-        {/* Business Scheduling Rules */}
-        <div className="p-8 sm:p-10 rounded-2xl bg-slate-900/80 border border-slate-800 mb-16 space-y-6">
-          <h2 className="text-2xl font-bold text-white">Scheduling Rules We Configure For Your Operations</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Booking is rarely as simple as picking an empty slot. We customize logic for your exact business requirements:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {[
-              { title: 'Service Type & Duration', desc: 'Different lengths for consultations vs procedures.' },
-              { title: 'Staff & Resource Assignment', desc: 'Route appointments to the correct provider or room.' },
-              { title: 'Buffer Times & Travel Windows', desc: 'Prevent back-to-back strain and dispatch delays.' },
-              { title: 'Lead-Time Constraints', desc: 'Enforce minimum notice (e.g., at least 2 hours out).' },
-              { title: 'New vs Returning Patients', desc: 'Different intake questions and paperwork triggers.' },
-              { title: 'Emergency Slot Reservation', desc: 'Hold critical daily windows for urgent needs.' },
-            ].map((rule, idx) => (
-              <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <div className="text-sm font-bold text-white mb-1">{rule.title}</div>
-                <div className="text-xs text-slate-400">{rule.desc}</div>
-              </div>
-            ))}
+      {/* Business Scheduling Rules */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+          <div className="p-8 sm:p-12 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm mb-16 space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a2957]">Scheduling Rules We Configure For Your Operations</h2>
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+              Booking is rarely as simple as picking an empty slot. We customize logic for your exact business requirements:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 pt-2">
+              {[
+                { title: 'Service Type & Duration', desc: 'Different lengths for consultations vs full service appointments.' },
+                { title: 'Staff & Resource Assignment', desc: 'Route appointments to the correct provider, room or technician.' },
+                { title: 'Buffer Times & Travel Windows', desc: 'Prevent back-to-back strain and dispatch traffic delays.' },
+                { title: 'Lead-Time Constraints', desc: 'Enforce minimum notice requirements (e.g. at least 2 hours out).' },
+                { title: 'New vs Returning Clients', desc: 'Different intake questions, documents, and deposit triggers.' },
+                { title: 'Emergency Slot Reservation', desc: 'Hold critical daily windows for urgent or VIP needs.' },
+              ].map((rule, idx) => (
+                <div key={idx} className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                  <div className="text-base font-bold text-gray-900 mb-1.5">{rule.title}</div>
+                  <div className="text-xs text-gray-500 leading-relaxed">{rule.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* No Double Booking Guarantee */}
+          <div className="p-8 sm:p-10 rounded-3xl bg-white border border-gray-100 shadow-md space-y-4">
+            <h3 className="text-xl font-bold text-[#1a2957]">Live Calendar Sync & Double-Booking Prevention</h3>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Every booking check queries live availability directly through Google Calendar, Microsoft Graph, or your industry CRM. When a slot is held, it locks in real-time, completely eliminating double bookings across voice, text, and web channels.
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <div className="border-t border-gray-100 mt-16 pt-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <Link href="/ai-sms-email-automation" className="text-sm text-gray-500 hover:text-[#1a2957] font-semibold">
+              ← Previous: AI SMS & Email
+            </Link>
+            <Link href="/ai-lead-qualification" className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 hover:text-blue-700">
+              Next: AI Lead Qualification & Follow-Up →
+            </Link>
           </div>
         </div>
-
-        {/* No Double Booking Guarantee */}
-        <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 mb-16 space-y-4">
-          <h3 className="text-lg font-bold text-white">Live Calendar Sync & Double-Booking Prevention</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Every booking check queries live availability directly through Google Calendar, Microsoft Graph, or your industry CRM. When a slot is held, it locks in real-time, completely eliminating double bookings across voice, text, and web channels.
-          </p>
-        </div>
-
-        {/* Navigation */}
-        <div className="border-t border-slate-800 pt-10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <Link href="/ai-sms-email-automation" className="text-sm text-slate-400 hover:text-white">
-            ← Previous: AI SMS & Email
-          </Link>
-          <Link href="/ai-lead-qualification" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80">
-            Next: AI Lead Qualification & Follow-Up →
-          </Link>
-        </div>
-      </div>
+      </section>
     </main>
   );
 }

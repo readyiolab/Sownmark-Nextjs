@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {
   BookOpen,
   Calculator,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -110,68 +111,68 @@ const clusters = [
 
 export default function ResourcesPage() {
   return (
-    <main className="bg-slate-950 text-slate-100 min-h-screen pt-32 pb-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-8">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-primary font-semibold">Resources</span>
+    <main className="bg-white text-gray-900 min-h-screen">
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
         </div>
-
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-bold uppercase tracking-wider">
             <BookOpen className="w-3.5 h-3.5" />
             Knowledge Base & Practical Guides
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-6">
-            AI Automation Resources and Guides
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            AI Automation Resources & Guides
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
             Objective frameworks, regulatory guides, and practical playbooks on AI voice agents, missed call recovery, two-way SMS, and automated scheduling for service businesses.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+            <Button asChild size="lg" className="bg-white text-[#1a2957] hover:bg-gray-100 font-bold rounded-full shadow-lg">
               <Link href="/#calculator" className="inline-flex items-center gap-2">
-                <Calculator className="w-4 h-4" />
+                <Calculator className="w-4 h-4 text-blue-600" />
                 Launch Lost Revenue Calculator
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-slate-800 text-slate-300 hover:bg-slate-900">
+            <Button asChild variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full">
               <Link href="/contact#strategy-call">Book a Strategy Call</Link>
             </Button>
           </div>
         </div>
+      </section>
 
-        {/* Resource Clusters Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {clusters.map((cluster, idx) => (
-            <div key={idx} className="p-7 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                {cluster.title}
-              </h2>
-              <ul className="space-y-2.5">
-                {cluster.articles.map((art, aIdx) => (
-                  <li key={aIdx} className="text-sm text-slate-300 hover:text-primary transition-colors flex items-start gap-2">
-                    <span className="text-slate-500 text-xs mt-1">▸</span>
-                    <span>{art}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+      {/* Resource Clusters Grid */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {clusters.map((cluster, idx) => (
+              <div key={idx} className="p-8 sm:p-10 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm space-y-5 hover:shadow-md transition-all">
+                <h2 className="text-xl font-bold text-[#1a2957] flex items-center gap-2.5">
+                  <span className="w-3 h-3 rounded-full bg-blue-600" />
+                  {cluster.title}
+                </h2>
+                <ul className="space-y-3">
+                  {cluster.articles.map((art, aIdx) => (
+                    <li key={aIdx} className="text-sm text-gray-700 hover:text-blue-600 transition-colors flex items-start gap-2.5 font-medium">
+                      <span className="text-blue-500 font-bold text-xs mt-1">▸</span>
+                      <span>{art}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
 
-        {/* Transparent Editorial Policy */}
-        <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
-          <h3 className="text-base font-bold text-white">Editorial & Accuracy Standards</h3>
-          <p className="text-xs text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Our guides are written by real software engineers and automation specialists. We do not invent statistics, make speculative ranking promises, or claim automatic regulatory compliance without human verification.
-          </p>
+          {/* Transparent Editorial Policy */}
+          <div className="p-8 sm:p-10 rounded-3xl bg-white border border-gray-100 shadow-md text-center space-y-3">
+            <h3 className="text-xl font-bold text-[#1a2957]">Editorial & Accuracy Standards</h3>
+            <p className="text-xs sm:text-sm text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Our guides are written by real software engineers and automation specialists. We do not invent statistics, make speculative ranking promises, or claim automatic regulatory compliance without human verification.
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }

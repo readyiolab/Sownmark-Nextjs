@@ -143,104 +143,107 @@ const industriesSchema = {
 
 export default function IndustriesPage() {
   return (
-    <main className="bg-slate-950 text-slate-100 min-h-screen pt-32 pb-24">
+    <main className="bg-white text-gray-900 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(industriesSchema) }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-8">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-primary font-semibold">Industries</span>
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
         </div>
-
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-bold uppercase tracking-wider">
             <Building2 className="w-3.5 h-3.5" />
             Tailored Industry Workflows
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-6">
-            Custom AI Agents Built Around Your Industry’s Workflows
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            Custom AI Agents Built Around Your Industry Workflows
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
             Every trade and practice has unique scheduling rules, emergency thresholds, and compliance boundaries. We configure custom Multi AI Agents that reflect how your business actually operates.
           </p>
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold">
-            <Link href="/contact#strategy-call">Book an AI Strategy Call</Link>
-          </Button>
+          <div className="pt-2">
+            <Button asChild size="lg" className="bg-white text-[#1a2957] hover:bg-gray-100 font-bold rounded-full shadow-lg">
+              <Link href="/contact#strategy-call">Book an AI Strategy Call</Link>
+            </Button>
+          </div>
         </div>
+      </section>
 
-        {/* Quick Filter Navigation */}
-        <div className="flex flex-wrap gap-2 justify-center mb-16">
-          {industriesData.map((ind) => (
-            <a
-              key={ind.id}
-              href={`#${ind.id}`}
-              className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
-            >
-              {ind.name}
-            </a>
-          ))}
-        </div>
+      {/* Main Content */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          {/* Quick Filter Navigation */}
+          <div className="flex flex-wrap gap-2 justify-center mb-16">
+            {industriesData.map((ind) => (
+              <a
+                key={ind.id}
+                href={`#${ind.id}`}
+                className="px-3.5 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-bold text-gray-700 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-colors shadow-sm"
+              >
+                {ind.name}
+              </a>
+            ))}
+          </div>
 
-        {/* Detailed Industry Cards (13 sections) */}
-        <div className="space-y-10">
-          {industriesData.map((ind) => (
-            <section
-              key={ind.id}
-              id={ind.id}
-              className="p-8 sm:p-10 rounded-2xl bg-slate-900/90 border border-slate-800 scroll-mt-24 space-y-5"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-full bg-primary" />
-                  {ind.name}
-                </h2>
-                <Link
-                  href="/contact#strategy-call"
-                  className="text-xs font-semibold text-primary hover:text-primary/80 inline-flex items-center gap-1"
-                >
-                  Configure for {ind.name} <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <div>
-                  <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-2">The Operational Bottleneck</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">{ind.problem}</p>
+          {/* Detailed Industry Cards (13 sections) */}
+          <div className="space-y-10">
+            {industriesData.map((ind) => (
+              <section
+                key={ind.id}
+                id={ind.id}
+                className="p-8 sm:p-10 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm scroll-mt-28 space-y-6"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4">
+                  <h2 className="text-2xl font-bold text-[#1a2957] flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-blue-600" />
+                    {ind.name}
+                  </h2>
+                  <Link
+                    href="/contact#strategy-call"
+                    className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                  >
+                    Configure for {ind.name} <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
-                <div>
-                  <h3 className="text-xs uppercase font-bold text-emerald-400 tracking-wider mb-2">Example AI Agent Workflow</h3>
-                  <p className="text-sm text-slate-300 leading-relaxed">{ind.workflow}</p>
-                </div>
-              </div>
 
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-start gap-2.5">
-                <ShieldAlert className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
-                <div>
-                  <strong className="text-slate-300">Compliance & Regulatory Note: </strong>
-                  {ind.compliance}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  <div className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                    <h3 className="text-xs uppercase font-extrabold text-gray-400 tracking-wider mb-2">The Operational Bottleneck</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">{ind.problem}</p>
+                  </div>
+                  <div className="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                    <h3 className="text-xs uppercase font-extrabold text-emerald-600 tracking-wider mb-2">Example AI Agent Workflow</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">{ind.workflow}</p>
+                  </div>
                 </div>
-              </div>
-            </section>
-          ))}
-        </div>
 
-        {/* Bottom CTA */}
-        <div className="mt-20 p-10 rounded-3xl bg-gradient-to-br from-blue-950/60 to-slate-900 border border-blue-800/40 text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3">Don't See Your Specific Trade or Niche?</h3>
-          <p className="text-slate-300 text-sm max-w-xl mx-auto mb-6">
-            We build custom logic for any business that relies on phone calls, text follow-ups, and booked appointments.
-          </p>
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold">
-            <Link href="/contact#strategy-call">Discuss Your Industry Flow</Link>
-          </Button>
+                <div className="p-4 sm:p-5 rounded-2xl bg-white border border-gray-200 text-xs text-gray-600 flex items-start gap-3 shadow-sm">
+                  <ShieldAlert className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                  <div>
+                    <strong className="text-gray-900">Compliance & Regulatory Note: </strong>
+                    {ind.compliance}
+                  </div>
+                </div>
+              </section>
+            ))}
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="mt-20 p-10 sm:p-12 rounded-3xl bg-[#1a2957] text-white text-center shadow-xl">
+            <h3 className="text-2xl sm:text-3xl font-black text-white mb-3">Don't See Your Specific Trade or Niche?</h3>
+            <p className="text-blue-100 text-sm max-w-xl mx-auto mb-6 leading-relaxed">
+              We build custom logic for any business that relies on phone calls, text follow-ups, and booked appointments.
+            </p>
+            <Button asChild size="lg" className="bg-white text-[#1a2957] hover:bg-gray-100 font-bold rounded-full shadow-lg">
+              <Link href="/contact#strategy-call">Discuss Your Industry Flow</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }

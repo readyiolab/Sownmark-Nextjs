@@ -6,6 +6,7 @@ import {
   Globe,
   Database,
   Layers,
+  ArrowRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -56,86 +57,86 @@ const devSchema = {
 
 export default function WebsiteSoftwareDevelopmentPage() {
   return (
-    <main className="bg-slate-950 text-slate-100 min-h-screen pt-32 pb-24">
+    <main className="bg-white text-gray-900 min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(devSchema) }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-slate-400 mb-8">
-          <Link href="/" className="hover:text-white">Home</Link>
-          <span>/</span>
-          <span className="text-primary font-semibold">Software Development</span>
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
+        <div className="absolute inset-0 opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
         </div>
-
-        {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold uppercase tracking-wider mb-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10 space-y-6">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-cyan-200 text-xs font-bold uppercase tracking-wider">
             <Code className="w-3.5 h-3.5" />
             Connected Growth Infrastructure
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-6">
-            Custom Websites and Software That Connect to Your AI Agents
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+            Custom Websites & Software That Power AI Agents
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 leading-relaxed mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
             An AI agent is only as useful as the systems it can reach. Custom websites, CRMs, dashboards and APIs give your agents somewhere to capture leads, read real-time availability, write records and report results.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+            <Button asChild size="lg" className="bg-white text-[#1a2957] hover:bg-gray-100 font-bold rounded-full shadow-lg">
               <Link href="/contact#strategy-call">Book an AI & Software Call</Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="border-slate-800 text-slate-300 hover:bg-slate-900">
+            <Button asChild variant="outline" size="lg" className="border-white/20 bg-white/5 hover:bg-white/10 text-white rounded-full">
               <Link href="/ai-agents">Explore Multi AI Agents</Link>
             </Button>
           </div>
         </div>
+      </section>
 
-        {/* What We Build */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {[
-            {
-              title: 'Conversion-First Websites',
-              desc: 'High-speed Next.js web platforms with built-in appointment widgets, live agent chat, and analytics tracking.',
-              icon: Globe,
-            },
-            {
-              title: 'Custom CRMs & Portals',
-              desc: 'Tailored lead pipelines, customer dashboards, and dispatch portals designed around your exact business steps.',
-              icon: Database,
-            },
-            {
-              title: 'Robust API Integrations',
-              desc: 'Secure webhooks and REST integrations connecting your telephony, SMS carriers, payment processors, and databases.',
-              icon: Layers,
-            },
-          ].map((item, idx) => (
-            <div key={idx} className="p-7 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center">
-                <item.icon className="w-6 h-6" />
+      {/* What We Build */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {[
+              {
+                title: 'Conversion-First Websites',
+                desc: 'High-speed Next.js web platforms with built-in appointment widgets, live agent chat, and analytics tracking.',
+                icon: Globe,
+              },
+              {
+                title: 'Custom CRMs & Portals',
+                desc: 'Tailored lead pipelines, customer dashboards, and dispatch portals designed around your exact business steps.',
+                icon: Database,
+              },
+              {
+                title: 'Robust API Integrations',
+                desc: 'Secure webhooks and REST integrations connecting your telephony, SMS carriers, payment processors, and databases.',
+                icon: Layers,
+              },
+            ].map((item, idx) => (
+              <div key={idx} className="p-8 rounded-3xl bg-gray-50 border border-gray-100 shadow-sm space-y-4 hover:shadow-md transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-bold text-[#1a2957]">{item.title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{item.desc}</p>
               </div>
-              <h3 className="text-lg font-bold text-white">{item.title}</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        {/* Custom vs Off-the-Shelf Section */}
-        <div className="p-8 sm:p-10 rounded-2xl bg-slate-900 border border-slate-800 mb-16 space-y-4">
-          <h2 className="text-xl font-bold text-white">When Custom Software Beats Off-The-Shelf Tools</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Off-the-shelf software is ideal when your process is completely standard. But when you need complex dispatch logic, proprietary pricing calculators, unusual calendar assignments, or complete data ownership without monthly seat-license inflation, custom engineering delivers superior ROI and seamless AI agent connectivity.
-          </p>
-        </div>
+          {/* Custom vs Off-the-Shelf Section */}
+          <div className="p-8 sm:p-12 rounded-3xl bg-white border border-gray-100 shadow-md mb-16 space-y-4">
+            <h2 className="text-2xl font-bold text-[#1a2957]">When Custom Software Beats Off-The-Shelf Tools</h2>
+            <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+              Off-the-shelf software is ideal when your process is completely standard. But when you need complex dispatch logic, proprietary pricing calculators, unusual calendar assignments, or complete data ownership without monthly seat-license inflation, custom engineering delivers superior ROI and seamless AI agent connectivity.
+            </p>
+          </div>
 
-        {/* CTA */}
-        <div className="text-center pt-8 border-t border-slate-800">
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold">
-            <Link href="/contact#strategy-call">Discuss Your Software Architecture</Link>
-          </Button>
+          {/* CTA */}
+          <div className="text-center pt-6">
+            <Button asChild size="lg" className="bg-[#1a2957] hover:bg-blue-900 text-white font-bold rounded-full px-8 shadow-lg">
+              <Link href="/contact#strategy-call">Discuss Your Software Architecture</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
