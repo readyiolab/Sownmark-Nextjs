@@ -29,7 +29,6 @@ const industriesData = [
   {
     id: 'dental',
     name: 'Dental Practices',
-    icon: Stethoscope,
     problem: 'Front desk overloaded; high missed-call volume during lunch hours and after-hours.',
     workflow: 'Call answered promptly, caller identified as new vs existing patient, hygiene or checkup booked into dental software, SMS confirmation sent.',
     compliance: 'Patient data handling: HIPAA applies to US covered entities and may require a Business Associate Agreement (BAA). Non-clinical triage only.',
