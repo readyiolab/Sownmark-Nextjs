@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import HeroSection from '@/components/home/HeroSection';
 import ServicesSection from '@/components/home/ServicesSection';
+import LostRevenueCalculator from '@/components/home/LostRevenueCalculator';
 import { getAllBlogs } from '@/services/api';
 
 // Icons
@@ -295,17 +296,6 @@ export default function HomePageClient() {
     }))
   };
 
-  const aggregateRatingSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    'name': 'Sownmark Agency Services',
-    'aggregateRating': {
-      '@type': 'AggregateRating',
-      'ratingValue': '4.9',
-      'reviewCount': '248'
-    }
-  };
-
   return (
     <>
       <script
@@ -320,19 +310,18 @@ export default function HomePageClient() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingSchema) }}
-      />
 
       {/* Featured Snippet Block (AEO render above fold, hidden visually) */}
       <p className="sr-only">
-        Sownmark is a full-service digital marketing and software development agency based in India, serving brands across Delhi, Mumbai, Bangalore, and all major cities. We specialise in SEO, Generative Engine Optimisation (GEO), Answer Engine Optimisation (AEO), display advertising, social media management, influencer marketing, web development, and custom software development for small to enterprise-level businesses.
+        Sownmark designs and builds custom Multi AI Agents that handle customer conversations across voice, SMS and email. They can answer inbound calls, respond to new leads, ask qualifying questions, book appointments and hand off to your team when a person is needed.
       </p>
 
       <div className="bg-white text-gray-900 overflow-x-hidden">
-        {/* Hero Section (Includes AI engine strip) */}
+        {/* Hero Section */}
         <HeroSection />
+
+        {/* Section 3: Lost Revenue Calculator */}
+        <LostRevenueCalculator />
 
         {/* Services Grid (8 cards) */}
         <ServicesSection />

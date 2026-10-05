@@ -1,62 +1,82 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Award, ShieldCheck, Heart, Sparkles, ArrowRight } from 'lucide-react';
+import { ShieldCheck, UserCheck, Cpu, Lock, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: "About Sownmark — India's AI-First Digital Marketing & Tech Agency",
+  title: 'About Sownmark | Custom Multi AI Agent Company',
   description:
-    "Learn about Sownmark — our story, team, mission, and why we're India's most forward-thinking digital marketing and software development agency.",
+    'Sownmark is an international AI automation, software development and digital growth company building custom Multi AI Agents for businesses.',
+  keywords: [
+    'AI automation company',
+    'custom AI agent development company',
+    'AI software development company',
+    'Sownmark',
+    'AI agents for small business',
+    'business automation partner',
+  ],
   alternates: {
-    canonical: 'https://sownmark.com/about',
+    canonical: 'https://sownmark.com/about/',
   },
 };
-
-const values = [
-  { title: 'Excellence', desc: 'Committed to delivering clean code and high-converting marketing campaigns.', icon: <Award className="w-6 h-6 text-blue-500" />, border: 'border-t-blue-500' },
-  { title: 'Innovation', desc: 'Staying at the absolute forefront of generative AI search systems like ChatGPT/GEO.', icon: <Sparkles className="w-6 h-6 text-cyan-500" />, border: 'border-t-cyan-500' },
-  { title: 'Integrity', desc: 'Honest billing, clear reporting dashboards, and complete IP transfers.', icon: <ShieldCheck className="w-6 h-6 text-green-500" />, border: 'border-t-green-500' },
-  { title: 'Client First', desc: 'Measuring our success entirely by client conversions and pipeline metrics.', icon: <Heart className="w-6 h-6 text-pink-500" />, border: 'border-t-pink-500' },
-];
-
-const stats = [
-  { value: '200+', label: 'Happy Brands' },
-  { value: '500+', label: 'Campaigns Delivered' },
-  { value: '15+', label: 'Industries Served' },
-  { value: '98%', label: 'Retention Rate' },
-];
 
 const pageSchema = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  'name': 'About Sownmark',
-  'description': 'Learn about Sownmark — our story, team, mission, and why we are India\'s most forward-thinking digital marketing and software agency.',
-  'publisher': {
+  name: 'About Sownmark | Custom Multi AI Agent Company',
+  description:
+    'Sownmark is an international AI automation, software development and digital growth company building custom Multi AI Agents for businesses.',
+  url: 'https://sownmark.com/about/',
+  publisher: {
     '@type': 'Organization',
-    'name': 'Sownmark',
-    'logo': 'https://sownmark.com/logo.webp'
-  }
+    name: 'Sownmark',
+    logo: 'https://sownmark.com/logo.webp',
+  },
 };
 
 const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  'name': 'Sownmark',
-  'founder': [
+  name: 'Sownmark',
+  founder: [
     {
       '@type': 'Person',
-      'name': 'Surya Pratap Singh',
-      'jobTitle': 'CEO & Founder'
+      name: 'Surya Pratap Singh',
+      jobTitle: 'CEO & Founder',
     },
     {
       '@type': 'Person',
-      'name': 'Deepak Kumar',
-      'jobTitle': 'CTO & Head of Engineering'
-    }
-  ]
+      name: 'Deepak Kumar',
+      jobTitle: 'CTO & Head of Engineering',
+    },
+  ],
 };
 
 export default function AboutPage() {
+  const principles = [
+    {
+      title: 'Human Handoff by Design',
+      desc: 'AI handles repetitive questions and speed to lead; humans handle sensitive, emotional, and high-value decisions.',
+      icon: <UserCheck className="w-6 h-6 text-blue-400" />,
+    },
+    {
+      title: 'Consent & Carrier Compliance',
+      desc: 'We build strict opt-in verification and opt-out handling into every SMS, email, and voice cadence.',
+      icon: <Lock className="w-6 h-6 text-emerald-400" />,
+    },
+    {
+      title: 'Systems-First Engineering',
+      desc: 'Your AI agent, CRM pipelines, calendar rules, and marketing campaigns are designed as one integrated system.',
+      icon: <Cpu className="w-6 h-6 text-purple-400" />,
+    },
+    {
+      title: 'No Fabricated Claims',
+      desc: 'Transparent pricing factors, clear boundaries on what AI cannot do, and zero false promises.',
+      icon: <ShieldCheck className="w-6 h-6 text-amber-400" />,
+    },
+  ];
+
   return (
     <>
       <script
@@ -68,106 +88,101 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
       />
 
-      <div className="bg-white text-gray-900">
+      <div className="bg-slate-950 text-slate-100 min-h-screen pt-32 pb-24">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
-          <div className="absolute inset-0 opacity-15">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+            <Globe className="w-3.5 h-3.5" />
+            International AI Automation Partner
           </div>
-          <div className="container max-w-4xl mx-auto px-4 relative z-10 space-y-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full w-fit mx-auto block">
-              Meet Sownmark
-            </span>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
-              India's AI-First Digital Marketing & Tech Agency
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              We started with a vision to bridge the gap between traditional digital marketing and advanced artificial intelligence indexing.
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight mb-6">
+            About Sownmark
+          </h1>
+          <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            Sownmark is an international AI automation, software development and digital growth company. We build custom Multi AI Agents that help businesses capture, engage, qualify, follow up with and schedule customers across voice, SMS and email.
+          </p>
+        </section>
+
+        {/* Narrative & Working Model */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-20">
+          <div className="p-8 sm:p-12 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Our Approach to Business Automation</h2>
+            <p className="text-base text-slate-300 leading-relaxed">
+              Most businesses do not have a lead generation problem alone—they have a speed-to-lead and follow-up problem. Every missed phone call or slow form response allows an interested buyer to reach a competing service provider.
+            </p>
+            <p className="text-base text-slate-300 leading-relaxed">
+              Rather than selling generic one-size-fits-all chatbots or off-the-shelf software tools that break, Sownmark engineers custom Multi AI Agents tailored to your company's actual operating rules, CRM fields, and customer vocabulary. We connect voice, texting, email, and live calendar synchronization so that no opportunity is lost.
+            </p>
+
+            {/* International Transparency Note from Phase 12 */}
+            <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-sm text-slate-300 leading-relaxed">
+              <strong className="text-white block mb-1">Global Delivery & Dedicated Engineering</strong>
+              Sownmark operates from India and serves clients across the United States, Australia, Canada, Singapore, the United Kingdom, and New Zealand. Our engineering team provides high-touch custom setup, continuous monitoring, and timezone-aligned support for international service businesses.
+            </div>
+          </div>
+        </section>
+
+        {/* Responsible AI Principles */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-20">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Responsible AI Principles</h2>
+            <p className="text-sm text-slate-400">
+              How we design and deploy AI agents that protect customer trust and operational stability.
             </p>
           </div>
-        </section>
 
-        {/* Story Section */}
-        <section className="py-20">
-          <div className="container max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
-            <div className="space-y-6">
-              <h2 className="text-3xl font-extrabold text-[#1a2957]">Our Story</h2>
-              <p className="text-gray-600 leading-relaxed">
-                Founded in India, Sownmark has grown from a core SEO company into a full-scale digital agency. Our operations team observed that search queries were shifting from blue links to direct, conversational answers.
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                By investing heavily in Generative Engine Optimisation (GEO) and custom React/Next.js/Flutter software frameworks, we prepared our clients to be visible on platforms like ChatGPT, Perplexity, and Google AI Overviews. Today, we manage over ₹50 Crore in ad spend and support 200+ brands.
-              </p>
-            </div>
-            
-            <div className="bg-gray-50 border border-gray-100 p-8 rounded-3xl grid grid-cols-2 gap-6">
-              {stats.map((s, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 text-center shadow-sm">
-                  <div className="text-2xl sm:text-3xl font-black text-blue-600 mb-1">{s.value}</div>
-                  <div className="text-xs text-gray-400 font-bold uppercase tracking-wider leading-tight">{s.label}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {principles.map((item, idx) => (
+              <div key={idx} className="p-7 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 w-fit">
+                  {item.icon}
                 </div>
-              ))}
-            </div>
+                <h3 className="text-base font-bold text-white">{item.title}</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Mission & Vision */}
-        <section className="py-20 bg-gray-50">
-          <div className="container max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-              <h3 className="text-xl font-extrabold text-[#1a2957]">Our Mission</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                To empower startups and enterprises globally by delivering predictable customer acquisition channels, high-authority AI search citation footprints, and clean software architectures.
+        {/* Leadership Team */}
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl mb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-10">Engineering Leadership</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
+              <div className="w-16 h-16 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center mx-auto text-xl font-black text-blue-400">
+                SP
+              </div>
+              <h3 className="text-lg font-bold text-white">Surya Pratap Singh</h3>
+              <p className="text-xs text-primary font-semibold">CEO & Founder</p>
+              <p className="text-xs text-slate-400 pt-1 leading-relaxed">
+                Directing strategic architecture, customer discovery, and Multi AI agent workflows for international business operations.
               </p>
             </div>
-            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-              <h3 className="text-xl font-extrabold text-[#1a2957]">Our Vision</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                To stand as the absolute benchmark for AI-Ready digital marketing and custom software engineering, bridging human creativity with algorithmic search index dominance.
+
+            <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
+              <div className="w-16 h-16 rounded-full bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center mx-auto text-xl font-black text-emerald-400">
+                DK
+              </div>
+              <h3 className="text-lg font-bold text-white">Deepak Kumar</h3>
+              <p className="text-xs text-emerald-400 font-semibold">CTO & Head of Engineering</p>
+              <p className="text-xs text-slate-400 pt-1 leading-relaxed">
+                Leading software architecture, real-time telephony pipelines, CRM connectors, and high-availability cloud infrastructure.
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* Our Values */}
-        <section className="py-24">
-          <div className="container max-w-7xl mx-auto px-4 space-y-16 text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900">Our Core Values</h2>
-            <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto text-left">
-              {values.map((v, idx) => (
-                <div key={idx} className={`bg-white p-8 border border-gray-100 ${v.border} border-t-4 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 space-y-4`}>
-                  <div className="p-3 bg-gray-50 rounded-2xl w-fit">{v.icon}</div>
-                  <h3 className="font-extrabold text-gray-900 text-lg">{v.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">{v.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* GEO/AEO Approach */}
-        <section className="py-20 bg-white">
-          <div className="container max-w-3xl mx-auto px-4 text-center space-y-6">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a2957]">Our Approach to GEO & AEO</h2>
-            <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-              At Sownmark, we treat ChatGPT and Gemini as active citation search targets. We structure website copy, clean up microdata fields, submit press logs, and secure authority references so conversational crawlers record and display your products.
-            </p>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-[#1a2957] text-white text-center">
-          <div className="container max-w-3xl mx-auto px-4 space-y-6">
-            <h2 className="text-3xl sm:text-4xl font-extrabold">Ready to Partner with Sownmark?</h2>
-            <p className="text-blue-100 text-sm sm:text-base">Get in touch with our operations team to outline your technical roadmap.</p>
-            <div className="pt-4">
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-700 font-bold rounded-full shadow-lg hover:bg-gray-50 transition-all"
-              >
-                <span>Start a Project</span>
-                <ArrowRight className="w-4 h-4 text-blue-700" />
-              </Link>
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
+          <div className="p-10 rounded-3xl bg-gradient-to-br from-blue-950/60 to-slate-900 border border-blue-800/40 space-y-4">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white">Let’s Discuss Your Automation Roadmap</h3>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+              Reach out directly to review your call volume, missed opportunities, and technical stack.
+            </p>
+            <div className="pt-2">
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white font-bold">
+                <Link href="/contact#strategy-call">Book an AI Strategy Call</Link>
+              </Button>
             </div>
           </div>
         </section>

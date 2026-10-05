@@ -39,10 +39,13 @@ export default function ContactPageClient() {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash === '#contact-form') {
-      const element = document.getElementById('contact-form');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash === '#contact-form' || hash === '#strategy-call') {
+        const element = document.getElementById('strategy-call') || document.getElementById('contact-form');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     }
   }, []);
@@ -50,37 +53,19 @@ export default function ContactPageClient() {
   const pageSchema = {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
-    'name': 'Contact Sownmark',
-    'description': 'Get in touch with Sownmark for digital marketing, GEO/AEO, display advertising, web development, software development, and social media services.',
-    'url': 'https://sownmark.com/contact'
+    name: 'Book an AI Automation Strategy Call | Sownmark',
+    description:
+      'Book an AI Automation Strategy Call with Sownmark or email hello@sownmark.com. Tell us what you want to automate.',
+    url: 'https://sownmark.com/contact/',
   };
 
   const businessSchema = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    'name': 'Sownmark',
-    'image': 'https://sownmark.com/logo.webp',
-    'telephone': '+919792166702',
-    'email': 'hello@sownmark.com',
-    'address': {
-      '@type': 'PostalAddress',
-      'addressLocality': 'Delhi',
-      'addressCountry': 'IN'
-    },
-    'openingHoursSpecification': {
-      '@type': 'OpeningHoursSpecification',
-      'dayOfWeek': [
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-      ],
-      'opens': '00:00',
-      'closes': '23:59'
-    }
+    '@type': 'Organization',
+    name: 'Sownmark',
+    image: 'https://sownmark.com/logo.webp',
+    telephone: '+91-9792166702',
+    email: 'hello@sownmark.com',
   };
 
   return (
@@ -96,25 +81,25 @@ export default function ContactPageClient() {
 
       <div className="bg-white text-gray-900">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#1a2957] text-white text-center overflow-hidden">
-          <div className="absolute inset-0 opacity-15">
+        <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 bg-[#070b19] text-white text-center overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#3b82f6_0%,transparent_50%)]" />
           </div>
           <div className="container max-w-4xl mx-auto px-4 relative z-10 space-y-6">
             <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full w-fit mx-auto block">
-              Connect With Us
+              AI Strategy Session
             </span>
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight">
-              Let's Build & Scale Together
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+              Book an AI Automation Strategy Call
             </h1>
-            <p className="text-lg md:text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              Have a custom software project or marketing campaign requirements? Submit our form or chat directly on WhatsApp.
+            <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              Tell us about your business and what you want to automate. On the call we will review your call flow, lead sources and systems, and tell you honestly whether an AI agent is a good fit.
             </p>
           </div>
         </section>
 
         {/* Contact Form and Details */}
-        <section className="py-24">
+        <section className="py-24" id="strategy-call">
           <div className="container max-w-7xl mx-auto px-4 grid lg:grid-cols-12 gap-12 items-start">
             {/* Contact Form */}
             <div className="lg:col-span-7 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm" id="contact-form">

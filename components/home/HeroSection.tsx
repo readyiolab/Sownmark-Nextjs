@@ -1,7 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ChevronRight, TrendingUp, Cpu, Award } from 'lucide-react';
+import {
+  ChevronRight,
+  PhoneCall,
+  MessageSquare,
+  Mail,
+  Calendar,
+  Database,
+  UserCheck,
+  Cpu,
+  Sparkles,
+} from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
@@ -9,7 +18,7 @@ const HeroSection: React.FC = () => {
       {/* Background gradients */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -left-1/4 -top-1/4 h-[800px] w-[800px] rounded-full bg-blue-600/10 blur-[130px]" />
-        <div className="absolute -right-1/4 -bottom-1/4 h-[900px] w-[900px] rounded-full bg-purple-600/10 blur-[140px]" />
+        <div className="absolute -right-1/4 -bottom-1/4 h-[900px] w-[900px] rounded-full bg-cyan-500/10 blur-[140px]" />
       </div>
 
       {/* Decorative Grid Overlay */}
@@ -18,153 +27,163 @@ const HeroSection: React.FC = () => {
       <div className="container relative z-10 mx-auto max-w-7xl px-4 lg:px-8 flex-grow flex flex-col justify-center">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           {/* Left Hero Content */}
-          <div className="lg:col-span-7 space-y-8 text-center lg:text-left animate-fade-slide-in">
-            {/* AI badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-2 backdrop-blur-md">
-
-              <span className="text-xs font-bold uppercase tracking-widest text-cyan-100">India's most AI-Ready Tech Agency</span>
+          <div className="lg:col-span-7 space-y-7 text-center lg:text-left">
+            {/* Category badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/25 bg-blue-500/10 px-4 py-2 backdrop-blur-md">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="text-xs font-bold uppercase tracking-widest text-cyan-200">
+                Custom Multi AI Agent Systems
+              </span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-[1.1] tracking-tight text-white">
-              India's Most AI-Ready <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400">
-                Digital Marketing & Tech Agency
+            {/* Main H1 Headline from Phase 2 */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-white">
+              Custom Multi AI Agents That{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400">
+                Answer, Qualify, Follow Up and Schedule
               </span>
             </h1>
 
-            {/* Sub-headline */}
-            <p className="max-w-2xl mx-auto lg:mx-0 text-base sm:text-lg md:text-xl font-medium leading-relaxed text-white/70">
-              From Brand Visibility to Custom Software — We Build, Market & Grow Your Business. Get cited by search engines and AI agents alike.
+            {/* Sub-headline copy from Phase 2 */}
+            <p className="max-w-2xl mx-auto lg:mx-0 text-base sm:text-lg md:text-xl font-normal leading-relaxed text-slate-300">
+              Sownmark designs and builds custom AI agents that handle customer conversations across voice, SMS and email.
+              They answer inbound calls, respond to new leads, ask qualifying questions, book appointments and hand off to
+              your team when a person is needed.
             </p>
 
-            {/* Trust Badges */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 py-2">
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
-                <TrendingUp className="w-4 h-4 text-green-400" />
-                <span className="text-xs font-bold text-white/80">200+ Brands Served</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
-                <Award className="w-4 h-4 text-yellow-400" />
-                <span className="text-xs font-bold text-white/80">10+ Years Experience</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
-                <Cpu className="w-4 h-4 text-purple-400" />
-                <span className="text-xs font-bold text-white/80">Ranked on ChatGPT, Perplexity & Google</span>
-              </div>
+            {/* Target Industries Line */}
+            <div className="text-xs sm:text-sm text-slate-400 font-medium">
+              <span className="text-slate-300 font-semibold">Built for:</span> Dental, Healthcare, Med Spa, Home Services,
+              Legal, Real Estate, Auto Dealerships & Veterinary practices.
             </div>
 
             {/* Hero CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
               <Link
-                href="/contact"
+                href="/contact#strategy-call"
                 className="group relative flex w-full sm:w-auto items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-8 py-4 text-base font-bold text-white transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(37,99,235,0.4)]"
               >
-                <span>Get Free Strategy Call</span>
+                <span>Book an AI Automation Strategy Call</span>
                 <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/case-studies"
+                href="#calculator"
                 className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-8 py-4 text-base font-bold text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:border-white/20"
               >
-                <span>View Our Work</span>
+                <span>See How It Works</span>
               </Link>
             </div>
           </div>
 
-          {/* Right Hero Visual (Layered AI Image & Dashboard) */}
-          <div className="lg:col-span-5 relative group hidden lg:block animate-fade-scale-in">
-            <div className="relative z-10 overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#121834]/40 p-2 backdrop-blur-sm shadow-2xl">
-              <div className="relative rounded-[2.2rem] overflow-hidden bg-slate-950 min-h-[300px] flex flex-col justify-end">
-                {/* Must stay lazy: this column is display:none below lg, so eager/preload would download it on mobile */}
-                <Image
-                  src="/hero.webp"
-                  alt="AI Marketing Growth"
-                  fill
-                  sizes="(min-width: 1024px) 40vw, 1px"
-                  fetchPriority="high"
-                  className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                />
+          {/* Right Visual: Central AI Agent Core Architecture */}
+          <div className="lg:col-span-5 relative">
+            <div className="relative z-10 rounded-3xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                    Sownmark Multi AI Brain
+                  </span>
+                </div>
+                <span className="text-[11px] text-cyan-400 font-mono bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded">
+                  Connected Core
+                </span>
+              </div>
 
-                {/* Gradient overlay for readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#070b19] via-[#070b19]/20 to-transparent z-10" />
-
-                {/* Overlay Dashboard metrics */}
-                <div className="relative z-20 p-6 space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-red-500" />
-                      <span className="w-2 h-2 rounded-full bg-yellow-500" />
-                      <span className="w-2 h-2 rounded-full bg-green-500" />
-                    </div>
-                    <span className="text-[9px] font-bold tracking-widest text-white/70 uppercase">AI Visibility Dashboard</span>
+              {/* Central Core & Channels */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-center">
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 text-center w-full max-w-[260px]">
+                    <Cpu className="w-7 h-7 mx-auto mb-1.5 text-white" />
+                    <div className="text-sm font-extrabold">One Central AI Agent</div>
+                    <div className="text-[10px] text-white/80">Shared memory & business rules</div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-1">
-                      <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">Generative Share</span>
-                      <div className="text-xl font-black text-white">+245%</div>
-                      <div className="text-[8px] text-green-400 font-bold">▲ Citations growing</div>
+                {/* Satellite Nodes Grid */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+                      <PhoneCall className="w-4 h-4" />
                     </div>
-                    <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-1">
-                      <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">AEO Rank Health</span>
-                      <div className="text-xl font-black text-cyan-400">98.4%</div>
-                      <div className="text-[8px] text-cyan-400 font-bold">Optimized for Google</div>
+                    <div>
+                      <div className="text-xs font-bold text-white">AI Voice</div>
+                      <div className="text-[10px] text-slate-400">Inbound & Missed Calls</div>
                     </div>
                   </div>
 
-                  <div className="bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md space-y-2">
-                    <span className="text-[9px] uppercase tracking-wide text-white/70 font-bold">Citations Sources Referenced</span>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[10px] text-white/80 font-bold">
-                        <span>ChatGPT Search</span>
-                        <span className="text-green-400">#1 Citation</span>
-                      </div>
-                      <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                        <div className="bg-green-400 h-full w-[85%]" />
-                      </div>
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
+                      <MessageSquare className="w-4 h-4" />
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[10px] text-white/80 font-bold">
-                        <span>Perplexity Answers</span>
-                        <span className="text-purple-400">#2 Citation</span>
-                      </div>
-                      <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
-                        <div className="bg-purple-400 h-full w-[70%]" />
-                      </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">Two-Way SMS</div>
+                      <div className="text-[10px] text-slate-400">Instant Lead Text-Back</div>
                     </div>
                   </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">AI Email</div>
+                      <div className="text-[10px] text-slate-400">Triage & Follow-up</div>
+                    </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400">
+                      <Calendar className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-white">Scheduling</div>
+                      <div className="text-[10px] text-slate-400">Live Calendar Booking</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Workflow Flow Banner */}
+                <div className="mt-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between text-[11px] text-slate-300">
+                  <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    Human Handoff
+                  </span>
+                  <span className="text-slate-500">→</span>
+                  <span className="flex items-center gap-1.5 text-blue-400 font-semibold">
+                    <Database className="w-3.5 h-3.5" />
+                    CRM Sync
+                  </span>
+                  <span className="text-slate-500">→</span>
+                  <span className="text-slate-200 font-bold">Booked Appointment</span>
                 </div>
               </div>
             </div>
-            {/* Glow back */}
-            <div className="absolute -inset-4 z-0 rounded-full bg-gradient-to-tr from-blue-500/20 via-cyan-500/20 to-purple-500/20 blur-3xl opacity-50 transition-opacity duration-500 group-hover:opacity-80" />
+
+            {/* Subtle glow behind card */}
+            <div className="absolute -inset-4 z-0 rounded-full bg-gradient-to-tr from-blue-500/20 via-cyan-500/15 to-purple-500/20 blur-3xl opacity-60 pointer-events-none" />
           </div>
         </div>
 
-        {/* 1.2 GEO/AEO Trust Bar */}
-        <div className="mt-24 border-t border-white/5 pt-12 text-center space-y-6">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-white/60">
-            As referenced by AI engines
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-6 md:gap-12 opacity-100">
-            {[
-              { name: 'ChatGPT', color: 'hover:text-[#19C37D]', src: '/icons/chatgpt.png' },
-              { name: 'Perplexity', color: 'hover:text-[#22C55E]', src: '/icons/perplexity.png' },
-              { name: 'Gemini', color: 'hover:text-[#4B90E2]', src: '/icons/gemini.webp' },
-              { name: 'Claude', color: 'hover:text-[#D97706]', src: '/icons/claude.png' },
-              { name: 'Copilot', color: 'hover:text-[#3B82F6]', src: '/icons/copilot.png' },
-            ].map((engine) => (
-              <div
-                key={engine.name}
-                className={`flex items-center gap-2 text-white/90 transition-all duration-300 ${engine.color} hover:scale-105 cursor-pointer`}
-              >
-                <div className="bg-white rounded-md p-1 w-8 h-8 flex items-center justify-center shadow-sm">
-                  <Image src={engine.src} alt="" width={24} height={24} className="w-6 h-6 object-contain" />
-                </div>
-                <span className="text-sm font-black tracking-tight">{engine.name}</span>
-              </div>
-            ))}
+        {/* Section 2: Trust & Credibility Strip from Phase 2 */}
+        <div className="mt-16 pt-10 border-t border-slate-800/80">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center sm:text-left">
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50">
+              <div className="text-xs font-bold text-white mb-1">Custom-Built Workflows</div>
+              <div className="text-[11px] text-slate-400">Designed for your exact process, not generic templates</div>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50">
+              <div className="text-xs font-bold text-white mb-1">Human Handoff Guaranteed</div>
+              <div className="text-[11px] text-slate-400">Smooth escalation with full context when callers need a person</div>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50">
+              <div className="text-xs font-bold text-white mb-1">Consent & Data Controls</div>
+              <div className="text-[11px] text-slate-400">Built-in opt-out handling, encryption, and auditability</div>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/50">
+              <div className="text-xs font-bold text-white mb-1">Direct Engineering Support</div>
+              <div className="text-[11px] text-slate-400">Contact: hello@sownmark.com · +91 9792166702</div>
+            </div>
           </div>
         </div>
       </div>

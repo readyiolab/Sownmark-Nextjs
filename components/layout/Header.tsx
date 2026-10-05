@@ -68,19 +68,18 @@ const Header: React.FC<HeaderProps> = ({ isScrolled }) => {
   }, []);
 
   const serviceLinks = [
-    { name: 'Digital Marketing', path: '/services/digital-marketing' },
-    { name: 'SEO + GEO + AEO', path: '/services/seo' },
-    { name: 'Display Advertising', path: '/services/display-advertising' },
-    { name: 'Social Media Management', path: '/services/social-media-management' },
-    { name: 'Influencer Marketing', path: '/services/influencer-marketing' },
-    { name: 'Web Development', path: '/services/web-development' },
-    { name: 'Software Development', path: '/services/software-development' },
-    { name: 'Hiring Solutions', path: '/services/hiring-solutions' },
+    { name: 'Multi AI Agents (Core)', path: '/ai-agents' },
+    { name: 'AI Voice Agents', path: '/ai-voice-agents' },
+    { name: 'AI SMS & Email Automation', path: '/ai-sms-email-automation' },
+    { name: 'AI Appointment Scheduling', path: '/ai-appointment-scheduling' },
+    { name: 'AI Lead Qualification', path: '/ai-lead-qualification' },
+    { name: 'Custom Website & Software', path: '/website-software-development' },
+    { name: 'Digital Marketing', path: '/digital-marketing' },
   ];
 
   const mainLinks = [
-    { name: 'Case Studies', path: '/case-studies' },
-    { name: 'Blog', path: '/blog' },
+    { name: 'Industries', path: '/industries' },
+    { name: 'Resources', path: '/resources' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];

@@ -2,11 +2,19 @@ import type { Metadata } from 'next';
 import ContactPageClient from './ContactPageClient';
 
 export const metadata: Metadata = {
-  title: 'Contact Sownmark | Digital Marketing & Tech Agency India',
+  title: 'Contact Sownmark | Book an AI Strategy Call',
   description:
-    'Get in touch with Sownmark for digital marketing, GEO/AEO, display advertising, web development, software development, and social media services.',
+    'Book an AI Automation Strategy Call with Sownmark or email hello@sownmark.com. Tell us what you want to automate.',
+  keywords: [
+    'book AI automation call',
+    'contact AI agent company',
+    'AI automation consultation',
+    'custom AI agent quote',
+    'talk to Sownmark',
+    'AI strategy call',
+  ],
   alternates: {
-    canonical: 'https://sownmark.com/contact',
+    canonical: 'https://sownmark.com/contact/',
   },
 };
 
